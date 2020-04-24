@@ -33,14 +33,12 @@ setup(
     classifiers=CLASSIFIERS,
     url='https://github.com/luke-gregor/SeaFlux',
     use_scm_version={
-        'version_scheme': 'post-release',
-        'local_scheme': 'dirty-tag',
     },
     long_description=long_description,
     packages=find_packages(),
     install_requires=install_requires,
 
-    test_suite='seaflux/tests',
+    test_suite='tests',
     tests_require=test_requirements,
     setup_requires=[
         'setuptools_scm',
