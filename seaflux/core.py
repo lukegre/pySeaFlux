@@ -10,6 +10,7 @@ https://doi.org/10.5194/gmd-2019-46
 from . import aux_eqs as eqs
 from . import gas_transfer_CO2
 from . import unit_checks as check
+import warnings
 
 
 def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
@@ -241,6 +242,8 @@ def flux_woolf2016_rapid(
     """
     from numpy import array
     from xarray import DataArray
+
+    warnings.warn("This function has not been tested yet")
 
     if isinstance(pCO2_bulk_uatm, DataArray):
         var = pCO2_bulk_uatm.copy()  # attribute preservation
