@@ -64,3 +64,4 @@ target/
 
 # vscode
 .vscode/*
+junit.xml
