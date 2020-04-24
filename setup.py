@@ -3,7 +3,7 @@ from os.path import exists
 from setuptools import find_packages, setup
 
 if exists('README.rst'):
-    with open('README.md') as f:
+    with open('README.rst') as f:
         long_description = f.read()
 else:
     long_description = ''

@@ -13,7 +13,7 @@ from . import unit_checks as check
 import warnings
 
 
-def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
+def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
     """
     Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
     equation would simply be:
@@ -31,11 +31,11 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     fCO2SW_uatm : array
         seawater fugacity of CO2 in micro atmospheres
     tempSW_C : array
-        sea water temperature in degrees C/K
-    tempEQ_C : array
-        equilibrator temperature in degrees C/K
+        sea water temperature in degrees C
     pres_hPa : array
         equilibrator pressure in kilo Pascals
+    tempEQ_C : array
+        equilibrator temperature in degrees C
 
     Returns
     -------
@@ -44,10 +44,12 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
 
     Note
     ----
-    In FluxEngine, they account for the change in xCO2. This error is so small
-    that it is not significant to be concerned about it. Their correction is
-    more precise, but the difference between their iterative correction and our
-    approximation is on the order of 1e-14 atm (or 1e-8 uatm).
+    In FluxEngine, they account fully solve for the original xCO2 that is used
+    in the calculation of the virial exponent. I use the first estimate of
+    xCO2 (based on fCO2 rather than pCO2). The difference between the two
+    approaches is so small that it is not significant to be concerned. Their
+    correction is more precise, but the difference between their iterative
+    correction and our approximation is on the order of 1e-14 atm (1e-8 uatm).
 
     Examples
     --------
@@ -61,11 +63,10 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
 
     from numpy import array
 
-    # if equilibrator inputs are None then make defaults Patm=1, tempEQ=tempSW
+    # if equilibrator inputs are None, tempEQ=tempSW
     if tempEQ_C is None:
+        tempEQ_was_None = True
         tempEQ_C = tempSW_C
-    if pres_hPa is None:
-        pres_hPa = 1013.25
 
     # standardise the inputs and convert units
     fCO2sw = array(fCO2SW_uatm) * 1e-6
@@ -80,9 +81,15 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     check.temp_K(Teq)
 
     # calculate the CO2 diff due to equilibrator and seawater temperatures
-    dT = eqs.temperature_correction(Tsw, Teq)
+    # if statement is there to save a bit of time
+    if tempEQ_was_None:
+        dT = 1.
+    else:
+        dT = eqs.temperature_correction(Tsw, Teq)
+
     # a best estimate of xCO2 - this is an aproximation
     # one would have to use pCO2 / Peq to get real xCO2
+    # Not getting the exact equilibrator xCO2
     xCO2eq = fCO2sw * dT / Peq
 
     pCO2SW = fCO2sw / eqs.virial_coeff(Tsw, Peq, xCO2eq)
