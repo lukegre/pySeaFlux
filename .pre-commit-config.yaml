@@ -1,0 +1,39 @@
+# This is left commented otherwise you cannot commit changes when modifying the cookiecutter template
+
+repos:
+
+  -   repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v2.2.3
+      hooks:
+      - id: trailing-whitespace
+      # - id: end-of-file-fixer
+      # - id: check-docstring-first
+#       - id: check-yaml
+#       - id: double-quote-string-fixer
+#       - id: no-commit-to-branch
+#       - id: debug-statements
+#       - id: check-merge-conflict
+
+#   -   repo: https://github.com/ambv/black
+#       rev: 19.10b0
+#       hooks:
+#       - id: black
+#         args: []
+
+#   -   repo: https://github.com/pre-commit/pre-commit-hooks
+#       rev: v2.4.0
+#       hooks:
+#       - id: flake8
+#         args: ["--exclude=__init__.py"]
+
+#   -   repo: https://github.com/pre-commit/mirrors-isort
+#       rev: v4.3.21
+#       hooks:
+#       -   id: isort
+#           args: ["--settings-path", "setup.cfg"]
+
+#   -   repo: https://github.com/PyCQA/doc8
+#       rev: 0.8.1rc2
+#       hooks:
+#       -   id: doc8
+#           args: ["--config", "setup.cfg"]
