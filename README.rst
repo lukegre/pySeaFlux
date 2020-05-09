@@ -18,7 +18,7 @@ Now has function to Calculate NOAA Marine Boundary Layer pCO2: :code:`SeaFlux.ut
 
 To Do
 -----
-- unit errors should only happen when more than 50% of non-nan values are not valid. Otherwise, raise warning and make output :code:`nan`.
+- unit errors should only happen when more than 50% of non-nan values are not valid. Otherwise, raise warning and make output :code:`nan`. Will double up with :code:`pyCO2SYS`.
 - tests! Currently there are not any meaningful tests. 
 - Add contributor file. 
 - Documentation
