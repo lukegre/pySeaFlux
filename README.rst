@@ -14,11 +14,11 @@ seaflux
 Calculate sea-air fluxes
 
 
-Now has function to Calculate NOAA Marine Boundary Layer pCO2: `SeaFlux.utils.noaa_mbl_to_pCO2`
+Now has function to Calculate NOAA Marine Boundary Layer pCO2: :code:`SeaFlux.utils.noaa_mbl_to_pCO2`
 
 To Do
 -----
-- unit errors should only happen when more than 50% of non-nan values are not valid. Otherwise, raise warning and make output `nan`.
+- unit errors should only happen when more than 50% of non-nan values are not valid. Otherwise, raise warning and make output :code:`nan`.
 - tests! Currently there are not any meaningful tests. 
 - Add contributor file. 
 - Documentation
