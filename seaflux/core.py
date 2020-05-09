@@ -13,6 +13,47 @@ from . import unit_checks as check
 import warnings
 
 
+def atm_xCO2_to_pCO2(xCO2_ppm, slp_hPa, tempSW_C, salt):
+    """
+    Convert atmospheric xCO2 to pCO2 with correction for water vapour pressure
+        pCO2atm = xCO2atm * (Press - pH2O)
+
+    Parameters
+    ----------
+    xCO2_ppm : array
+        atmospheric, or marine boundary layer mole fraction of CO2.
+    tempSW_C : array
+        sea water temperature in degrees C
+    pres_hPa : array
+        atmospheric pressure in hecto Pascal
+    salt : array
+        sea surface salinity in PSU
+
+    Returns
+    -------
+    pCO2atm: np.ndaarray
+        note that ouptut will be an np.ndarray regardless of input
+    """
+
+    from numpy import array
+
+    xCO2 = array(xCO2_ppm)
+    Tsw = array(tempSW_C + 273.15)
+    Ssw = array(salt)
+    Patm = array(slp_hPa / 1013.25)
+
+    # check if units make sense
+    check.pres_atm(Patm)
+    check.temp_K(Tsw)
+    check.salt(Ssw)
+
+    pH2O = eqs.vapress_dickson2007(Ssw, Tsw)
+
+    pCO2atm = xCO2 * (Patm - pH2O)
+
+    return pCO2atm
+
+
 def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
     """
     Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
@@ -33,7 +74,7 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
     tempSW_C : array
         sea water temperature in degrees C
     pres_hPa : array
-        equilibrator pressure in kilo Pascals
+        equilibrator pressure in hecto Pascals
     tempEQ_C : array
         equilibrator temperature in degrees C
 
@@ -186,7 +227,7 @@ def flux_woolf2016_rapid(
     wind_ms,
     kw_func=gas_transfer_CO2.k_Ni00,
     kw_scaling=None,
-    cool_skin_bias=0.14,
+    cool_skin_bias=-0.14,
     salty_skin_bias=0.1,
 ):
     """
