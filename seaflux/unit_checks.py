@@ -27,7 +27,7 @@ def temp_K(temp_K):
     from numpy import less, greater
 
     varname = "temperature (K)"
-    unit_checker(temp_K, less, 271.15, varname)
+    unit_checker(temp_K, less, 270.15, varname)
     unit_checker(temp_K, greater, 318.15, varname)
 
 
@@ -43,8 +43,8 @@ def CO2_mol(CO2_mol):
     from numpy import greater, less
 
     varname = "CO2 mole fraction (ppm)"
-    unit_checker(CO2_mol, greater, 0.01, varname)
-    unit_checker(CO2_mol, less, 50e-6, varname)
+    unit_checker(CO2_mol, greater, 0.08, varname)
+    unit_checker(CO2_mol, less, 5e-6, varname)
 
 
 def salt(salt):

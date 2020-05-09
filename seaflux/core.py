@@ -67,6 +67,8 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
     if tempEQ_C is None:
         tempEQ_was_None = True
         tempEQ_C = tempSW_C
+    else:
+        tempEQ_was_None = False
 
     # standardise the inputs and convert units
     fCO2sw = array(fCO2SW_uatm) * 1e-6
