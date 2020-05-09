@@ -10,11 +10,12 @@ seaflux
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
         :target: https://www.gnu.org/licenses/gpl-3.0
 
+With the following functionality
 
-Calculate sea-air fluxes
-
-
-Now has function to Calculate NOAA Marine Boundary Layer pCO2: :code:`SeaFlux.utils.noaa_mbl_to_pCO2`
+- Calculate sea-air fluxes: bulk, rapid-equilibration model (Woolf et al. 2016)
+- Convert pCO2 to fCO2 and *vice versa*. 
+- Correct or adjust pCO2 for temperature changes
+- Download NOAA Marine Boundary Layer xCO2 and convert to pCO2 if pressure, SST and salinity provided :code:`SeaFlux.utils.noaa_mbl_to_pCO2`
 
 To Do
 -----
