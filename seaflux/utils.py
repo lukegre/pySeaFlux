@@ -42,7 +42,7 @@ def noaa_mbl_to_dataset(
 ):
     """
     Downloads the NOAA marine boundary layer xCO2 and grids it
-    to a defined grid if target lat and lon provided
+    to a defined grid if target lat and lon provided.
 
     Parameters
     ==========
@@ -142,11 +142,12 @@ def noaa_mbl_to_dataset(
     return xda
 
 
-def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt):
+def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt, resample_freq=None):
     """
     This is a high-level function that downloads xCO2 (noaa_mbl_url) and
     calculates pCO2 for the given inputs. These need to be xarray.DataArrays
-    of the same shape
+    of the same shape. 
+    See SeaFlux.atm_xCO2_to_pCO2 for details about the calculation.
 
     Parameters
     ----------
@@ -161,6 +162,11 @@ def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt):
         (I recommend SODA or EN4 for global values)
     salt: xr.DataArray
         sea surface salinity (or analogous)
+    resample_freq: str
+        the time frequency that you want to resample atmxCO2 at. Default output
+        from NOOA's MBL data is weekly. See pandas documentation for more
+        details about valid frequency strings. If None is passed, will try to
+        guess the frequency from the 
 
     Returns
     -------
@@ -170,10 +176,12 @@ def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt):
 
     """
     from .core import atm_xCO2_to_pCO2
-    from pandas import Timestamp
+    from pandas import Timestamp, infer_freq
     from xarray import DataArray
+    from warnings import warn
 
     def all_same(items):
+        items = list(items)
         return all(x == items[0] for x in items)
 
     inputs = [press_hPa, tempSW_C, salt]
@@ -182,18 +190,32 @@ def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt):
     shapes = {a.name: a.shape for a in inputs}
     assert all_same(shapes.values()), f'all inputs shapes must match\n{shapes}'
     dims = [d in ('lat', 'lon') for d in press_hPa.dims]
-    assert all(dims), 'lat/lon must be dimensions of input arrays'
+    assert sum(dims) == 2, 'lat/lon must be dimensions of input arrays'
 
-    xCO2atm = noaa_mbl_to_dataset(
+    xCO2atm_out = noaa_mbl_to_dataset(
         noaa_mbl_url,
         target_lat=press_hPa.lat.values,
-        target_lon=press_hPa.lon.values,
-    )
-
-    pCO2atm = atm_xCO2_to_pCO2(xCO2atm, press_hPa, tempSW_C, salt)
-
-    pCO2atm.name = 'pCO2atm_MBLnoaa'
-    pCO2atm.attrs = dict(
+        target_lon=press_hPa.lon.values)
+    
+    xCO2atm = xCO2atm_out.copy()
+    if resample_freq is None:
+        freq = infer_freq(press_hPa.time.to_index())
+    if freq is not None:
+        xCO2atm = xCO2atm.resample(time=freq).mean()
+    else:
+        warn(
+            "A resampling frequency was not set or could not be inferred from "
+            "the input arrays. Data will be reindexed to the nearest matching "
+            "xCO2 values.", UserWarning)
+        
+    xCO2atm = xCO2atm.reindex_like(press_hPa, method='nearest')
+    
+    pCO2atm = DataArray(
+        data=atm_xCO2_to_pCO2(xCO2atm, press_hPa, tempSW_C, salt),
+        dims=press_hPa.dims,
+        coords=press_hPa.coords,
+        name='pCO2atm_MBLnoaa',
+        attrs=dict(
         standard_name=(
             'partial_pressure_of_carbon_dioxide_in_the_marine_boundary_layer'
         ),
@@ -205,12 +227,13 @@ def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt):
             '- pH2O). Where pH2O is calculated using vapour pressure from '
             'Dickson et al. (2007)'),
         history=(
-            getattr(xCO2atm, 'history', '').strip(';') + ';\n'
+            getattr(xCO2atm_out, 'history', '').strip(';') + ';\n'
             f'[SeaFlux@{Timestamp.today():%Y-%m-%dT%H:%M}]: '
             f'pCO2 calculated from xCO2 * (Patm - pH2O), where '
             f'pH2O is calculated with Dickson et al. (2007)'),
         citation=(
             'Ed Dlugokencky and Pieter Tans, NOAA/ESRL '
             '(www.esrl.noaa.gov/gmd/ccgg/trends/)'))
+    )
 
     return pCO2atm
