@@ -38,14 +38,10 @@ def atm_xCO2_to_pCO2(xCO2_ppm, slp_hPa, tempSW_C, salt):
     from numpy import array
 
     xCO2 = array(xCO2_ppm)
-    Tsw = array(tempSW_C + 273.15)
-    Ssw = array(salt)
-    Patm = array(slp_hPa / 1013.25)
-
-    # check if units make sense
-    check.pres_atm(Patm)
-    check.temp_K(Tsw)
-    check.salt(Ssw)
+    # check units and mask where outsider of range
+    Tsw = check.temp_K(tempSW_C + 273.15)
+    Ssw = check.salt(salt)
+    Patm = check.pres_atm(slp_hPa / 1013.25)
 
     pH2O = eqs.vapress_dickson2007(Ssw, Tsw)
 
@@ -112,16 +108,10 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
         tempEQ_was_None = False
 
     # standardise the inputs and convert units
-    fCO2sw = array(fCO2SW_uatm) * 1e-6
-    Tsw = array(tempSW_C) + 273.15
-    Teq = array(tempEQ_C) + 273.15
-    Peq = array(pres_hPa) / 1013.25
-
-    # check if units make sense
-    check.pres_atm(Peq)
-    check.CO2_mol(fCO2sw)
-    check.temp_K(Tsw)
-    check.temp_K(Teq)
+    fCO2sw = check.CO2_mol(fCO2SW_uatm * 1e-6)
+    Tsw = check.temp_K(tempSW_C + 273.15)
+    Teq = check.temp_K(tempEQ_C + 273.15)
+    Peq = check.pres_atm(pres_hPa / 1013.25)
 
     # calculate the CO2 diff due to equilibrator and seawater temperatures
     # if statement is there to save a bit of time
@@ -186,7 +176,6 @@ def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     >>> pCO2_to_fCO2(380, 8, pres_hPa=985, tempEQ_C=14)
     378.53960618459695
     """
-    from numpy import array
 
     # if equilibrator inputs are None then make defaults Patm=1, tempEQ=tempSW
     if tempEQ_C is None:
@@ -195,16 +184,10 @@ def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
         pres_hPa = 1013.25
 
     # standardise the inputs and convert units
-    pCO2sw = array(pCO2SW_uatm) * 1e-6
-    Tsw = array(tempSW_C) + 273.15
-    Teq = array(tempEQ_C) + 273.15
-    Peq = array(pres_hPa) / 1013.25
-
-    # check if units make sense
-    check.pres_atm(Peq)
-    check.CO2_mol(pCO2sw)
-    check.temp_K(Tsw)
-    check.temp_K(Teq)
+    pCO2sw = check.CO2_mol(pCO2SW_uatm * 1e-6)
+    Tsw = check.temp_K(tempSW_C + 273.15)
+    Teq = check.temp_K(tempEQ_C + 273.15)
+    Peq = check.pres_atm(pres_hPa / 1013.25)
 
     # calculate the CO2 diff due to equilibrator and seawater temperatures
     dT = eqs.temperature_correction(Tsw, Teq)
@@ -315,12 +298,12 @@ def flux_woolf2016_rapid(
     pCO2air = array(pCO2_air_uatm) * 1e-6
 
     # checking units
-    check.temp_K(SSTfnd_K)
-    check.salt(SSSfnd)
-    check.pres_atm(press_atm)
-    check.CO2_mol(pCO2sea)
-    check.CO2_mol(pCO2air)
-    check.wind_ms(wind_ms)
+    press_atm = check.pres_atm(press_atm)
+    SSTfnd_K = check.temp_K(SSTfnd_K)
+    SSSfnd = check.salt(SSSfnd)
+    pCO2sea = check.CO2_mol(pCO2sea)
+    pCO2air = check.CO2_mol(pCO2air)
+    wind_ms = check.wind_ms(wind_ms)
 
     fCO2sea = pCO2sea * eqs.virial_coeff(SSTfnd_K, press_atm)
     fCO2air = pCO2air * eqs.virial_coeff(SSTskn_K, press_atm)
@@ -431,12 +414,12 @@ def flux_bulk(
     pCO2air = array(pCO2_air_uatm) * 1e-6
 
     # checking units
-    check.temp_K(SSTfnd_K)
-    check.salt(SSSfnd)
-    check.pres_atm(press_atm)
-    check.CO2_mol(pCO2sea)
-    check.CO2_mol(pCO2air)
-    check.wind_ms(wind_ms)
+    SSTfnd_K = check.temp_K(SSTfnd_K)
+    SSSfnd = check.salt(SSSfnd)
+    press_atm = check.pres_atm(press_atm)
+    pCO2sea = check.CO2_mol(pCO2sea)
+    pCO2air = check.CO2_mol(pCO2air)
+    wind_ms = check.wind_ms(wind_ms)
 
     fCO2sea = pCO2sea * eqs.virial_coeff(SSTfnd_K, press_atm)
     fCO2air = pCO2air * eqs.virial_coeff(SSTfnd_K, press_atm)

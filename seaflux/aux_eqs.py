@@ -29,15 +29,11 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
     0.029285284543519093
     """
 
-    from numpy import array, exp, log
+    from numpy import exp, log
 
-    T = array(temp_K)
-    S = array(salt)
-    P = array(press_atm)
-
-    check.temp_K(T)
-    check.salt(S)
-    check.pres_atm(P)
+    T = check.temp_K(temp_K)
+    S = check.salt(salt)
+    P = check.pres_atm(press_atm)
 
     # from table in Wanninkhof 2014
     a1 = -58.0931
@@ -107,10 +103,7 @@ def schmidt_number(temp_C):
 
     """
 
-    from numpy import array
-
-    T = array(temp_C)
-    check.temp_K(T + 273.15)
+    T = check.temp_K(temp_C + 273.15)
 
     a = +2116.8
     b = -136.25
@@ -142,13 +135,9 @@ def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
     presCor_kPa : np.array
         height corrected pressure
     """
-    from numpy import array
 
-    P = array(pres_hPa) * 100  # pressure in Pascal
-    T = array(tempSW_C) + 273.15  # temperature in Kelvin
-
-    check.temp_K(T)
-    check.pres_atm(P / 101325)
+    T = check.temp_K(tempSW_C + 273.15)  # temperature in Kelvin
+    P = check.pres_atm(pres_hPa / 1013.25)  # pressure in Pascal
 
     # Correction for pressure based on sensor height
     R = 8.314  # universal gas constant (J/mol/K)
@@ -204,8 +193,8 @@ def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
     """
     from numpy import array
 
-    T = array(temp_K)
-    P = array(pres_atm)
+    T = check.temp_K(temp_K)
+    P = check.pres_atm(pres_atm)
     C = array(xCO2_mol)
     R = 82.057  # gas constant for ATM
 
@@ -255,11 +244,8 @@ def vapress_weiss1980(salt, temp_K):
     """
     from numpy import array, exp, log
 
-    T = array(temp_K)
-    S = array(salt)
-
-    check.temp_K(T)
-    check.salt(S)
+    T = check.temp_K(temp_K)
+    S = check.salt(salt)
 
     # Equation comes straight from Weiss and Price (1980)
     pH2O = exp(
@@ -292,12 +278,10 @@ def vapress_dickson2007(salt, temp_K):
     0.030698866245809465
 
     """
-    from numpy import array, exp
+    from numpy import exp
 
-    T = array(temp_K)
-    S = array(salt)
-
-    check.temp_K(T)
+    T = check.temp_K(temp_K)
+    S = check.salt(salt)
 
     ###################################################
     # WATER VAPOUR PRESSURE FOR PURE WATER
