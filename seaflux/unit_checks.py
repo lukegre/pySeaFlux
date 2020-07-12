@@ -76,14 +76,12 @@ class MetaArray(np.ma.MaskedArray):
     def __new__(cls, input_array, mask=None, meta=None, **options):
         if isinstance(input_array, MetaArray):
             if meta is not None:
-                diff = input_array.meta != meta
-                new_meta = input_array.meta
-                new_meta[diff] = meta[diff]
-                meta = new_meta
+                metaA = np.array(input_array.meta)
+                metaB = np.array(meta)
+                meta = metaA + metaB
             if mask is not None:
                 mask = input_array.mask | mask
-        arr = np.array(input_array, ndmin=1)
-        obj = np.ma.masked_array(arr, mask=mask, **options).view(cls)
+        obj = np.ma.masked_array(input_array, mask=mask, **options).view(cls)
         obj._optinfo['meta'] = meta
         return obj
 
