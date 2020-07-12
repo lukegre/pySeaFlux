@@ -1,6 +1,7 @@
-from . import unit_checks as check
+from .unit_checks import check_limits as check
 
 
+@check(temp_K=[271.15, 318.15], pres_atm=[0.5, 1.5], salt=[5, 50])
 def solubility_weiss1974(salt, temp_K, press_atm=1):
     """
     Calculates the solubility of CO2 in sea water for the calculation of
@@ -35,9 +36,9 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
     S = array(salt)
     P = array(press_atm)
 
-    check.temp_K(T)
-    check.salt(S)
-    check.pres_atm(P)
+    # check.temp_K(T)
+    # check.salt(S)
+    # check.pres_atm(P)
 
     # from table in Wanninkhof 2014
     a1 = -58.0931
@@ -61,6 +62,7 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
     return K0  # units mol/L/atm
 
 
+@check(temp_K=[271.15, 318.15], pres_atm=[0.5, 1.5], salt=[5, 50])
 def solubility_woolf2016(salt, temp_K, deltaT, press_atm=1):
     """
     A wrapper around solubility calculated using the Weiss (1974) approach.
@@ -85,6 +87,7 @@ def solubility_woolf2016(salt, temp_K, deltaT, press_atm=1):
     return K0 * (1 - 0.015 * deltaT)
 
 
+@check(temp_C=[-2, 45])
 def schmidt_number(temp_C):
     """
     Calculates the Schmidt number as defined by Jahne et al. (1987) and listed
@@ -123,6 +126,7 @@ def schmidt_number(temp_C):
     return Sc
 
 
+@check(tempSW_C=[-2, 45], pres_hPa=[600, 1300])
 def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
     """
     Returns exact sea level pressure if the sensor is measuring at height
@@ -147,9 +151,6 @@ def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
     P = array(pres_hPa) * 100  # pressure in Pascal
     T = array(tempSW_C) + 273.15  # temperature in Kelvin
 
-    check.temp_K(T)
-    check.pres_atm(P / 101325)
-
     # Correction for pressure based on sensor height
     R = 8.314  # universal gas constant (J/mol/K)
     M = 0.02897  # molar mass of air in (kg/mol) - Wikipedia
@@ -164,6 +165,7 @@ def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
     return press_height_corr_hpa
 
 
+@check(temp_K=[271.15, 318.15], pres_atm=[0.5, 1.5], xCO2_mol=[50e-6, 0.01])
 def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
     from numpy import exp
 
@@ -209,8 +211,8 @@ def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
     C = array(xCO2_mol)
     R = 82.057  # gas constant for ATM
 
-    check.temp_K(T)
-    check.pres_atm(P)
+    # check.temp_K(T)
+    # check.pres_atm(P)
 
     # B is the virial coefficient for pure CO2
     B = -1636.75 + 12.0408 * T - 0.0327957 * T ** 2 + 3.16528e-5 * T ** 3
@@ -220,7 +222,7 @@ def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
     # "x2" term often neglected (assumed = 1) in applications of Weiss's
     # (1974) equation 9
     if xCO2_mol is not None:
-        check.CO2_mol(C)
+        # check.CO2_mol(C)
         x2 = (1 - C) ** 2
     else:
         x2 = 1
@@ -230,6 +232,7 @@ def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
     return ve
 
 
+@check(temp_K=[271.15, 318.15], salt=[5, 50])
 def vapress_weiss1980(salt, temp_K):
     """
     Calculates the water vapour pressure of seawater at a given salinity and
@@ -269,6 +272,7 @@ def vapress_weiss1980(salt, temp_K):
     return pH2O
 
 
+@check(temp_K=[271.15, 318.15], salt=[5, 50])
 def vapress_dickson2007(salt, temp_K):
     """
     Calculates the water vapour pressure of seawater at a given salinity and

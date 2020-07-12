@@ -65,3 +65,4 @@ target/
 # vscode
 .vscode/*
 junit.xml
+**/.ipynb_checkpoints/**

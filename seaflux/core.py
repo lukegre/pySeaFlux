@@ -9,10 +9,11 @@ https://doi.org/10.5194/gmd-2019-46
 """
 from . import aux_eqs as eqs
 from . import gas_transfer_CO2
-from . import unit_checks as check
+from . unit_checks import check_limits as check
 import warnings
 
 
+@check(fCO2SW_uatm=[20, 1000], tempSW_C=[-2, 50], pres_hPa=[800, 1200])
 def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     """
     Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
@@ -73,12 +74,6 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     Teq = array(tempEQ_C) + 273.15
     Peq = array(pres_hPa) / 1013.25
 
-    # check if units make sense
-    check.pres_atm(Peq)
-    check.CO2_mol(fCO2sw)
-    check.temp_K(Tsw)
-    check.temp_K(Teq)
-
     # calculate the CO2 diff due to equilibrator and seawater temperatures
     dT = eqs.temperature_correction(Tsw, Teq)
     # a best estimate of xCO2 - this is an aproximation
@@ -91,6 +86,7 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     return pCO2SW_uatm
 
 
+@check(fCO2SW_uatm=[20, 1000], tempSW_C=[-2, 50], pres_hPa=[800, 1200])
 def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     """
     Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
@@ -265,12 +261,12 @@ def flux_woolf2016_rapid(
     pCO2air = array(pCO2_air_uatm) * 1e-6
 
     # checking units
-    check.temp_K(SSTfnd_K)
-    check.salt(SSSfnd)
-    check.pres_atm(press_atm)
-    check.CO2_mol(pCO2sea)
-    check.CO2_mol(pCO2air)
-    check.wind_ms(wind_ms)
+    # check.temp_K(SSTfnd_K)
+    # check.salt(SSSfnd)
+    # check.pres_atm(press_atm)
+    # check.CO2_mol(pCO2sea)
+    # check.CO2_mol(pCO2air)
+    # check.wind_ms(wind_ms)
 
     fCO2sea = pCO2sea * eqs.virial_coeff(SSTfnd_K, press_atm)
     fCO2air = pCO2air * eqs.virial_coeff(SSTskn_K, press_atm)
@@ -381,12 +377,12 @@ def flux_bulk(
     pCO2air = array(pCO2_air_uatm) * 1e-6
 
     # checking units
-    check.temp_K(SSTfnd_K)
-    check.salt(SSSfnd)
-    check.pres_atm(press_atm)
-    check.CO2_mol(pCO2sea)
-    check.CO2_mol(pCO2air)
-    check.wind_ms(wind_ms)
+    # check.temp_K(SSTfnd_K)
+    # check.salt(SSSfnd)
+    # check.pres_atm(press_atm)
+    # check.CO2_mol(pCO2sea)
+    # check.CO2_mol(pCO2air)
+    # check.wind_ms(wind_ms)
 
     fCO2sea = pCO2sea * eqs.virial_coeff(SSTfnd_K, press_atm)
     fCO2air = pCO2air * eqs.virial_coeff(SSTfnd_K, press_atm)
