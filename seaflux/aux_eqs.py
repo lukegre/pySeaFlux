@@ -1,4 +1,5 @@
 from .unit_checks import check_limits as check
+from numpy import array
 
 
 @check(temp_K=[271.15, 318.15], pres_atm=[0.5, 1.5], salt=[5, 50])
@@ -30,15 +31,10 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
     0.029285284543519093
     """
 
-    from numpy import array, exp, log
+    from numpy import exp, log
 
     T = array(temp_K)
     S = array(salt)
-    P = array(press_atm)
-
-    # check.temp_K(T)
-    # check.salt(S)
-    # check.pres_atm(P)
 
     # from table in Wanninkhof 2014
     a1 = -58.0931
@@ -110,10 +106,7 @@ def schmidt_number(temp_C):
 
     """
 
-    from numpy import array
-
-    T = array(temp_C)
-    check.temp_K(T + 273.15)
+    T = array(temp_C + 273.15)
 
     a = +2116.8
     b = -136.25
@@ -146,7 +139,6 @@ def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
     presCor_kPa : np.array
         height corrected pressure
     """
-    from numpy import array
 
     P = array(pres_hPa) * 100  # pressure in Pascal
     T = array(tempSW_C) + 273.15  # temperature in Kelvin
@@ -211,9 +203,6 @@ def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
     C = array(xCO2_mol)
     R = 82.057  # gas constant for ATM
 
-    # check.temp_K(T)
-    # check.pres_atm(P)
-
     # B is the virial coefficient for pure CO2
     B = -1636.75 + 12.0408 * T - 0.0327957 * T ** 2 + 3.16528e-5 * T ** 3
     # d is the virial coefficient for CO2 in air
@@ -261,9 +250,6 @@ def vapress_weiss1980(salt, temp_K):
     T = array(temp_K)
     S = array(salt)
 
-    check.temp_K(T)
-    check.salt(S)
-
     # Equation comes straight from Weiss and Price (1980)
     pH2O = exp(
         +24.4543 - 67.4509 * (100 / T) - 4.8489 * log(T / 100) - 0.000544 * S
@@ -296,12 +282,10 @@ def vapress_dickson2007(salt, temp_K):
     0.030698866245809465
 
     """
-    from numpy import array, exp
+    from numpy import exp
 
     T = array(temp_K)
     S = array(salt)
-
-    check.temp_K(T)
 
     ###################################################
     # WATER VAPOUR PRESSURE FOR PURE WATER
