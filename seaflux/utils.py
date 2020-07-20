@@ -1,34 +1,63 @@
+def earth_radius(lat):
+    from numpy import deg2rad, sin, cos
+    lat = deg2rad(lat)
+    a = 6378137
+    b = 6356752
+    r = (((a**2 * cos(lat))**2 + (b**2 * sin(lat))**2) /
+        ((a * cos(lat))**2 + (b * sin(lat))**2))**0.5
+
+    return r
 
 
-def area_grid(resolution=1):
-    """Calculate the area of each grid cell for a user-provided
-    grid cell resolution. Area is in square meters, but resolution
-    is given in decimal degrees."""
-    import numpy as np
-    import xarray as xr
+def area_grid(lat, lon, return_dataarray=False):
+    """
+    Calculate the area of each grid cell for a user-provided
+    grid cell resolution.
 
-    # Calculations needs to be in radians
-    lats = np.deg2rad(np.arange(-90, 90.1, resolution))
-    r_sq = 6371000 ** 2
-    n_lats = int(360.0 / resolution)
-    area = (
-        r_sq
-        * np.ones(n_lats)[:, None]
-        * np.deg2rad(resolution)
-        * (np.sin(lats[1:]) - np.sin(lats[:-1]))
-    )
-    xda = xr.DataArray(
-        area.T,
-        dims=["lat", "lon"],
-        coords={
-            "lat": np.arange(-90 + 0.5, 90),
-            "lon": np.arange(-180 + 0.5, 180),
-        },
-        attrs={
-            "long_name": "area_per_pixel",
-            "description": "area per pixel",
-            "units": "m^2",
-        },
-    )
+    Based on the function in
+    https://github.com/chadagreene/CDT/blob/master/cdt/cdtarea.m
 
-    return xda
+    Parameters
+    ----------
+    lat : array (1D)
+        latitudes ranging between -90 and 90
+    lon : array (1D)
+        longitudes ranging between (-180, 180)
+    return_dataarray : bool (False)
+        if True, returns a xr.DataArray with lat/lon as coords
+
+    Returns
+    -------
+
+    """
+    from numpy import meshgrid, deg2rad, gradient, cos
+
+    ylat, xlon = meshgrid(lat, lon)
+    R = earth_radius(ylat)
+
+    dlat = deg2rad(gradient(ylat, axis=1))
+    dlon = deg2rad(gradient(xlon, axis=0))
+
+    dy = dlat * R
+    dx = dlon * R * cos(deg2rad(ylat))
+
+    area = dy * dx
+
+    if not return_dataarray:
+        return area
+    else:
+        from xarray import DataArray
+        xda = DataArray(
+            area.T,
+            dims=["lat", "lon"],
+            coords={
+                "lat": lat,
+                "lon": lon,
+            },
+            attrs={
+                "long_name": "area_per_pixel",
+                "description": "area per pixel",
+                "units": "m^2",
+            },
+        )
+        return xda
