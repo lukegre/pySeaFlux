@@ -10,6 +10,8 @@ seaflux
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
         :target: https://www.gnu.org/licenses/gpl-3.0
 
+**WARNING: STILL IN DEVELOPMENT**
+
 With the following functionality
 
 - Calculate sea-air fluxes: bulk, rapid-equilibration model (Woolf et al. 2016)
