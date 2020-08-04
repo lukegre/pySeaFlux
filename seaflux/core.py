@@ -202,7 +202,7 @@ def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     return fCO2sw_uatm
 
 
-def flux_woolf2016_rapid(
+def _flux_woolf2016_rapid(
     temp_bulk_C,
     salt_bulk,
     pCO2_bulk_uatm,

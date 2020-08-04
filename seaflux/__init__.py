@@ -1,6 +1,6 @@
 from pkg_resources import DistributionNotFound, get_distribution
 
-from .core import fCO2_to_pCO2, flux_bulk, flux_woolf2016_rapid, pCO2_to_fCO2
+from .core import fCO2_to_pCO2, flux_bulk, pCO2_to_fCO2
 from . import aux_eqs as eqs
 from . import gas_transfer_CO2
 from . import utils
