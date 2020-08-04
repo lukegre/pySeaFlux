@@ -81,7 +81,14 @@ class MetaArray(np.ma.MaskedArray):
                 meta = metaA + metaB
             if mask is not None:
                 mask = input_array.mask | mask
-        obj = np.ma.masked_array(input_array, mask=mask, **options).view(cls)
+
+        if 'ndmin' not in options:
+            options.update(dict(ndmin=1))
+        obj = np.ma.masked_array(
+            input_array,
+            mask=mask,
+            **options
+        ).view(cls)
         obj._optinfo['meta'] = meta
         return obj
 
