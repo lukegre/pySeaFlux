@@ -1,5 +1,4 @@
 from .aux_eqs import schmidt_number
-from . import unit_checks as check
 
 
 def k_Li86(wind_ms, temp_C, scaled=None):
@@ -17,15 +16,12 @@ def k_Li86(wind_ms, temp_C, scaled=None):
     Returns
     -------
     kw : array
-        gas transfer velocity (k600) in cm/hr
+        gas transfer velocity (k600) in m/day
     """
     from numpy import array, nanmean, zeros_like
 
     U = array(wind_ms)
     T = array(temp_C)
-
-    check.temp_K(T + 273.15)
-    check.wind_ms(U)
 
     Sc = schmidt_number(T)
     k = zeros_like(temp_C)
@@ -39,7 +35,8 @@ def k_Li86(wind_ms, temp_C, scaled=None):
     k[i3] = ((U[i3] - 8.4) * 5.9) * (600 / Sc[i3]) ** 0.5
     if scaled is not None:
         k *= scaled / nanmean(k)
-    return k
+    k_md = k * (24 / 100)  # cm/hr to m/day
+    return k_md
 
 
 def k_Wa92(wind_ms, temp_C, scaled=None):
@@ -58,22 +55,20 @@ def k_Wa92(wind_ms, temp_C, scaled=None):
     Returns
     -------
     kw : array
-        gas transfer velocity (k660) in cm/hr
+        gas transfer velocity (k660) in m/day
     """
     from numpy import array, nanmean
 
     U = array(wind_ms)
     T = array(temp_C)
 
-    check.temp_K(T + 273.15)
-    check.wind_ms(U)
-
     Sc = schmidt_number(temp_C)
     k = (0.39 * U ** 2) * (660 / Sc) ** 0.5
 
     if scaled is not None:
         k *= scaled / nanmean(k)
-    return k
+    k_md = k * (24 / 100)  # cm/hr to m/day
+    return k_md
 
 
 def k_Sw07(wind_ms, temp_C, scaled=None):
@@ -92,22 +87,20 @@ def k_Sw07(wind_ms, temp_C, scaled=None):
     Returns
     -------
     kw : array
-        gas transfer velocity (k660) in cm/hr
+        gas transfer velocity (k660) in m/day
     """
     from numpy import array, nanmean
 
     U = array(wind_ms)
     T = array(temp_C)
 
-    check.temp_K(T + 273.15)
-    check.wind_ms(U)
-
     Sc = schmidt_number(temp_C)
     k = (0.27 * U ** 2) * (660 / Sc) ** 0.5
 
     if scaled is not None:
         k *= scaled / nanmean(k)
-    return k
+    k_md = k * (24 / 100)  # cm/hr to m/day
+    return k_md
 
 
 def k_Wa99(wind_ms, temp_C, scaled=None):
@@ -126,21 +119,19 @@ def k_Wa99(wind_ms, temp_C, scaled=None):
     Returns
     -------
     kw : array
-        gas transfer velocity (k600) in cm/hr
+        gas transfer velocity (k600) in m/day
     """
     from numpy import array, nanmean
 
     U = array(wind_ms)
     T = array(temp_C)
 
-    check.temp_K(T + 273.15)
-    check.wind_ms(U)
-
     Sc = schmidt_number(temp_C)
     k = (0.0283 * U ** 3) * (600 / Sc) ** 0.5
     if scaled is not None:
         k *= scaled / nanmean(k)
-    return k
+    k_md = k * (24 / 100)  # cm/hr to m/day
+    return k_md
 
 
 def k_Ni00(wind_ms, temp_C, scaled=None):
@@ -159,22 +150,20 @@ def k_Ni00(wind_ms, temp_C, scaled=None):
     Returns
     -------
     kw : array
-        gas transfer velocity (k600) in cm/hr
+        gas transfer velocity (k600) in m/day
     """
     from numpy import array, nanmean
 
     U = array(wind_ms)
     T = array(temp_C)
 
-    check.temp_K(T + 273.15)
-    check.wind_ms(U)
-
     Sc = schmidt_number(temp_C)
     k = (0.333 * U + 0.222 * U ** 2) * (600 / Sc) ** 0.5
 
     if scaled is not None:
         k *= scaled / nanmean(k)
-    return k
+    k_md = k * (24 / 100)  # cm/hr to m/day
+    return k_md
 
 
 def k_Ho06(wind_ms, temp_C, scaled=None):
@@ -193,22 +182,20 @@ def k_Ho06(wind_ms, temp_C, scaled=None):
     Returns
     -------
     kw : array
-        gas transfer velocity (k600) in cm/hr
+        gas transfer velocity (k600) in m/day
     """
     from numpy import array, nanmean
 
     U = array(wind_ms)
     T = array(temp_C)
 
-    check.temp_K(T + 273.15)
-    check.wind_ms(U)
-
     Sc = schmidt_number(temp_C)
     k = (0.266 * U ** 2) * (600 / Sc) ** 0.5
 
     if scaled is not None:
         k *= scaled / nanmean(k)
-    return k
+    k_md = k * (24 / 100)  # cm/hr to m/day
+    return k_md
 
 
 def k_Wa09(wind_ms, temp_C, scaled=None):
@@ -227,22 +214,20 @@ def k_Wa09(wind_ms, temp_C, scaled=None):
     Returns
     -------
     kw : array
-        gas transfer velocity (k660) in cm/hr
+        gas transfer velocity (k660) in m/day
     """
     from numpy import array, nanmean
 
     U = array(wind_ms)
     T = array(temp_C)
 
-    check.temp_K(T + 273.15)
-    check.wind_ms(U)
-
     Sc = schmidt_number(temp_C)
     k = (3.0 + 0.1 * U + 0.064 * U ** 2 + 0.011 * U ** 3) * (660 / Sc) ** 0.5
 
     if scaled is not None:
         k *= scaled / nanmean(k)
-    return k
+    k_md = k * (24 / 100)  # cm/hr to m/day
+    return k_md
 
 
 def k_Mc01(wind_ms, temp_C, scaled=None):
@@ -261,19 +246,17 @@ def k_Mc01(wind_ms, temp_C, scaled=None):
     Returns
     -------
     kw : array
-        gas transfer velocity (k660) in cm/hr
+        gas transfer velocity (k660) in m/day
     """
     from numpy import array, nanmean
 
     U = array(wind_ms)
     T = array(temp_C)
 
-    check.temp_K(T + 273.15)
-    check.wind_ms(U)
-
     Sc = schmidt_number(temp_C)
     k = 3.3 + (0.026 * U ** 3) * (660 / Sc) ** 0.5
 
     if scaled is not None:
         k *= scaled / nanmean(k)
-    return k
+    k_md = k * (24 / 100)  # cm/hr to m/day
+    return k_md

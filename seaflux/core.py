@@ -352,6 +352,7 @@ def flux_bulk(
     wind_ms,
     kw_func=gas_transfer_CO2.k_Ni00,
     kw_scaling=None,
+    return_params=True,
 ):
     """
     Calculates bulk air-sea CO2 fluxes: FCO2 = kw * K0 * dfCO2, without
@@ -385,7 +386,7 @@ def flux_bulk(
     ------
     FCO2 : np.array
         Sea-air CO2 flux where positive is out of the ocean and negative is
-        into the ocean. Units are gC.m-2.day-1 (grams Carbon per metre squared
+        into the ocean. Units are mol.m-2.day-1 (grams Carbon per metre squared
         per day)
     """
     from numpy import array
@@ -403,31 +404,26 @@ def flux_bulk(
 
     SSSfnd = array(salt_bulk)
 
-    pCO2sea = array(pCO2_bulk_uatm) * 1e-6  # to atm
-    pCO2air = array(pCO2_air_uatm) * 1e-6
+    pCO2sea = array(pCO2_bulk_uatm)
+    pCO2air = array(pCO2_air_uatm)
 
     fCO2sea = pCO2sea * eqs.virial_coeff(SSTfnd_K, press_atm)
     fCO2air = pCO2air * eqs.virial_coeff(SSTfnd_K, press_atm)
 
+    # UNIT ANALYSIS : K0 : mol / m3 / uatm
     K0blk = eqs.solubility_weiss1974(SSSfnd, SSTfnd_K, press_atm)
 
-    # molar mas of carbon in g . mmol-1
-    mC = 12.0108 * 1000  # (g . mol-1) / (mmol . mol-1)
+    # UNIT ANALYSIS : kw = m . day-1
+    kw = kw_func(wind_ms, SSTfnd_C, kw_scaling)
 
-    # KW : UNIT ANALYSIS
-    # kw = (cm . hr-1) * hr . day-1 . cm-1 . m
-    # kw = m . day-1
-    kw = kw_func(wind_ms, SSTfnd_C, kw_scaling) * (24 / 100)
-
-    # flux = (m . day-1) .  (mol . L-1 . atm-1) . atm . (gC . mmol-1)
-    # flux = (m . day-1) . (mmol . m-3 . atm-1) . atm . (gC . mmol-1)
-    # flux = gC . m-2 . day-1
-    CO2flux_bulk = kw * K0blk * (fCO2sea - fCO2air) * mC
+    # flux = (m . day-1) . (mol . m-3 . uatm-1) . uatm
+    # flux = mol . m-2 . day-1
+    CO2flux_bulk = kw * K0blk * (fCO2sea - fCO2air)
 
     if isinstance(var, DataArray):
         kw_name = kw_func.__name__[2:]
         attributes = dict(
-            units="gC / m2 / day",
+            units="mol / m2 / day",
             description=f"sea-air CO2 fluxes calculated with {kw_name}",
             long_name="sea-air CO2 fluxes",
         )
@@ -435,5 +431,24 @@ def flux_bulk(
         CO2flux_bulk = DataArray(
             data=CO2flux_bulk, coords=var.coords, attrs=attributes
         )
+
+        if return_params:
+            CO2flux_bulk = CO2flux_bulk.to_dataset(name='fgco2_bulk')
+            CO2flux_bulk[kw_func.__name__] = kw
+            CO2flux_bulk['sol_weiss74'] = K0blk
+
+            CO2flux_bulk['sol_weiss74'].attrs = dict(
+                units='mol / m3 / uatm',
+                description='Solubility of CO2 in seawater using Weiss (1973)')
+            CO2flux_bulk[kw_func.__name__].attrs = dict(
+                units='m / day',
+                long_name=('gas transfer velocity'),
+                description=f'scaled to global value of {kw_scaling}cm/hr')
+    elif return_params:
+        CO2flux_bulk = {
+            'fgco2_bulk': CO2flux_bulk,
+            'sol_weiss74': K0blk,
+            kw_func.__name__: kw,
+        }
 
     return CO2flux_bulk

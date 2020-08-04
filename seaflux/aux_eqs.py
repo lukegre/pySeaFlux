@@ -22,19 +22,20 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
     Returns
     -------
     K0 : np.array
-        solubility of CO2 in seawater in mol/L/atm
+        solubility of CO2 in seawater in mol/m3/uatm
 
     Examples
     --------
     # from Weiss (1974) Table 2 but with pH2O correction
     >>> solubility_weiss1974(35, 299.15)
-    0.029285284543519093
+    0.000029285284543519093
     """
 
     from numpy import exp, log
 
     T = array(temp_K)
     S = array(salt)
+    P = array(press_atm)
 
     # from table in Wanninkhof 2014
     a1 = -58.0931
@@ -54,8 +55,12 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
 
     pH2O = vapress_weiss1980(S, T)
     K0 = K0 / (P - pH2O)
+    # mol / L / atm --> mol / m3 / uatm
+    # mol / L / atm * 1000L/m3 * 1e-6atm/uatm
+    # mol / L / atm * 1e-3 --> mol / m3 / uatm
+    K0_molm3uatm = K0 * 1e-3
 
-    return K0  # units mol/L/atm
+    return K0_molm3uatm
 
 
 @check(temp_K=[271.15, 318.15], pres_atm=[0.5, 1.5], salt=[5, 50])
@@ -76,7 +81,7 @@ def solubility_woolf2016(salt, temp_K, deltaT, press_atm=1):
     Returns
     -------
     K0 : np.array
-        solubility of CO2 in seawater in mol/L/atm
+        solubility of CO2 in seawater in mol/m3/uatm
     """
     K0 = solubility_weiss1974(salt, temp_K, press_atm)
 
