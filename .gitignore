@@ -68,3 +68,4 @@ junit.xml
 
 # jupyter
 **/.ipynb_checkpoints/**
+.DS_Store
