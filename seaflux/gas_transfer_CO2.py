@@ -245,6 +245,40 @@ def k_Wa09(wind_ms, temp_C, scaled=None):
     return k
 
 
+def k_Wa14(wind_ms, temp_C, scaled=None):
+    """
+    Calculates the gas transfer coeffcient for CO2 using the formulation
+    of Wanninkhof et al. (2014)
+        k660 = 3. + (0.1 * U) + (0.064 * U^2) + (0.011 * U^3)
+
+    Parameters
+    ----------
+    wind_ms : np.array
+        wind speed in m/s
+    temp_C : np.array
+        temperature in degrees C
+
+    Returns
+    -------
+    kw : array
+        gas transfer velocity (k660) in cm/hr
+    """
+    from numpy import array, nanmean
+
+    U = array(wind_ms)
+    T = array(temp_C)
+
+    check.temp_K(T + 273.15)
+    check.wind_ms(U)
+
+    Sc = schmidt_number(temp_C)
+    k = 0.251 * U**2 * (660 / Sc) ** 0.5
+
+    if scaled is not None:
+        k *= scaled / nanmean(k)
+    return k
+
+
 def k_Mc01(wind_ms, temp_C, scaled=None):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
