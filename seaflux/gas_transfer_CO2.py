@@ -62,7 +62,7 @@ def k_Wa92(wind_ms, temp_C, scaled=None):
     U = array(wind_ms)
     T = array(temp_C)
 
-    Sc = schmidt_number(temp_C)
+    Sc = schmidt_number(T)
     k = (0.39 * U ** 2) * (660 / Sc) ** 0.5
 
     if scaled is not None:
@@ -94,7 +94,7 @@ def k_Sw07(wind_ms, temp_C, scaled=None):
     U = array(wind_ms)
     T = array(temp_C)
 
-    Sc = schmidt_number(temp_C)
+    Sc = schmidt_number(T)
     k = (0.27 * U ** 2) * (660 / Sc) ** 0.5
 
     if scaled is not None:
@@ -126,7 +126,7 @@ def k_Wa99(wind_ms, temp_C, scaled=None):
     U = array(wind_ms)
     T = array(temp_C)
 
-    Sc = schmidt_number(temp_C)
+    Sc = schmidt_number(T)
     k = (0.0283 * U ** 3) * (600 / Sc) ** 0.5
     if scaled is not None:
         k *= scaled / nanmean(k)
@@ -157,7 +157,7 @@ def k_Ni00(wind_ms, temp_C, scaled=None):
     U = array(wind_ms)
     T = array(temp_C)
 
-    Sc = schmidt_number(temp_C)
+    Sc = schmidt_number(T)
     k = (0.333 * U + 0.222 * U ** 2) * (600 / Sc) ** 0.5
 
     if scaled is not None:
@@ -189,7 +189,7 @@ def k_Ho06(wind_ms, temp_C, scaled=None):
     U = array(wind_ms)
     T = array(temp_C)
 
-    Sc = schmidt_number(temp_C)
+    Sc = schmidt_number(T)
     k = (0.266 * U ** 2) * (600 / Sc) ** 0.5
 
     if scaled is not None:
@@ -221,7 +221,7 @@ def k_Wa09(wind_ms, temp_C, scaled=None):
     U = array(wind_ms)
     T = array(temp_C)
 
-    Sc = schmidt_number(temp_C)
+    Sc = schmidt_number(T)
     k = (3.0 + 0.1 * U + 0.064 * U ** 2 + 0.011 * U ** 3) * (660 / Sc) ** 0.5
 
     if scaled is not None:
@@ -253,7 +253,7 @@ def k_Mc01(wind_ms, temp_C, scaled=None):
     U = array(wind_ms)
     T = array(temp_C)
 
-    Sc = schmidt_number(temp_C)
+    Sc = schmidt_number(T)
     k = 3.3 + (0.026 * U ** 3) * (660 / Sc) ** 0.5
 
     if scaled is not None:
