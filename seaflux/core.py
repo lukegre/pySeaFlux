@@ -209,7 +209,6 @@ def flux_woolf2016_rapid(
     press_hPa,
     wind_ms,
     kw_func=gas_transfer_CO2.k_Ni00,
-    kw_scaling=None,
     cool_skin_bias=-0.14,
     salty_skin_bias=0.1,
 ):
@@ -327,7 +326,7 @@ def flux_woolf2016_rapid(
     # KW : UNIT ANALYSIS
     # kw = (cm / 100) / (hr / 24)
     # kw = m . day-1
-    kw = kw_func(wind_ms, SSTskn_C, kw_scaling) * (24 / 100)
+    kw = kw_func(wind_ms, SSTskn_C) * (24 / 100)
 
     # FLUX : UNIT ANALYSIS
     # flux = (m . day-1) * (g . m-3)
@@ -357,8 +356,7 @@ def flux_bulk(
     pCO2_air_uatm,
     press_hPa,
     wind_ms,
-    kw_func=gas_transfer_CO2.k_Ni00,
-    kw_scaling=None,
+    kw_func=gas_transfer_CO2.k_Ni00
 ):
     """
     Calculates bulk air-sea CO2 fluxes: FCO2 = kw * K0 * dfCO2, without
@@ -432,7 +430,7 @@ def flux_bulk(
     # KW : UNIT ANALYSIS
     # kw = (cm . hr-1) * hr . day-1 . cm-1 . m
     # kw = m . day-1
-    kw = kw_func(wind_ms, SSTfnd_C, kw_scaling) * (24 / 100)
+    kw = kw_func(wind_ms, SSTfnd_C) * (24 / 100)
 
     # flux = (m . day-1) .  (mol . L-1 . atm-1) . atm . (gC . mmol-1)
     # flux = (m . day-1) . (mmol . m-3 . atm-1) . atm . (gC . mmol-1)
