@@ -81,41 +81,6 @@ def solubility_woolf2016(salt, temp_K, deltaT, press_atm=1):
     return K0 * (1 - 0.015 * deltaT)
 
 
-def schmidt_number(temp_C):
-    """
-    Calculates the Schmidt number as defined by Jahne et al. (1987) and listed
-    in Wanninkhof (2014) Table 1.
-
-    Parameters
-    ----------
-    temp_C : np.array
-        temperature in degrees C
-
-    Returns
-    -------
-    Sc : np.array
-        Schmidt number (dimensionless)
-
-    Examples
-    --------
-    >>> schmidt_number(20)  # from Wanninkhof (2014)
-    668.344
-
-    """
-
-    T = check.temp_K(temp_C + 273.15)
-
-    a = +2116.8
-    b = -136.25
-    c = +4.7353
-    d = -0.092307
-    e = +0.0007555
-
-    Sc = a + b * T + c * T ** 2 + d * T ** 3 + e * T ** 4
-
-    return Sc
-
-
 def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
     """
     Returns exact sea level pressure if the sensor is measuring at height

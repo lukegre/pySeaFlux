@@ -237,3 +237,48 @@ def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt, resample_freq=None
     )
 
     return pCO2atm
+
+
+def preserve_xda(func):
+    """
+    Function wrapper that will return output to xr.DataArray
+    if any of the inputs are DataArrays.
+    
+    The coordinates from the first input term that is a DataArray will be 
+    used to define the output DataArray
+    
+    If the output is a tuple and the second output is a dictionary, this 
+    output will be used to create the attributes of the DataArray. 
+    """
+    from functools import wraps
+    import xarray as xr
+    
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        xda = None
+        for a in args:
+            if isinstance(a, xr.DataArray):
+                xda = a
+                break
+                
+        out = func(*args, **kwargs)
+        istuple = isinstance(out, tuple)
+        if istuple:
+            second_isdict = isinstance(out[1], dict)
+        
+        if second_isdict:
+            data = out[0]
+            attrs = out[1]
+        else:
+            data = out
+            attrs = {}
+            
+        out = xr.DataArray(
+            data=data,
+            dims=xda.dims,
+            coords=xda.coords,
+            attrs=attrs
+        )
+        return out
+    
+    return wrapper
