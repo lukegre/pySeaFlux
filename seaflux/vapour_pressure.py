@@ -24,7 +24,7 @@ def weiss1980(salt, temp_K):
     0.03065529996317971
 
     """
-    from numpy import array, exp, log
+    from numpy import exp, log
 
     T = check.temp_K(temp_K)
     S = check.salt(salt)
