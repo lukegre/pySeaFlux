@@ -10,7 +10,8 @@ def test_CO2flux_bulk():
 
 
 def test_CO2flux_woolf():
-    flux = sf.flux_woolf2016_rapid(25, 35, 300, 400, 1013.25, 20)
+    from seaflux import flux_calculations as flux
+    flux = flux.flux_woolf2016_rapid(25, 35, 300, 400, 1013.25, 20)
 
     # seaward is negative
     assert flux < 0

@@ -1,4 +1,4 @@
-from . import unit_checks as check
+from . import check_units as check
 from .utils import preserve_xda
 
 

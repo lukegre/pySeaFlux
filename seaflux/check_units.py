@@ -35,6 +35,9 @@ def check_array_bounds(arr, lims, action='warn', name=''):
     from warnings import warn
 
     arr = array(arr, ndmin=1, dtype=float)
+    if arr.size <= 2:
+        return arr
+
     outside = (arr < lims[0]) | (arr > lims[1])
 
     non_nan_count = arr.size - isnan(arr).sum()
@@ -47,6 +50,7 @@ def check_array_bounds(arr, lims, action='warn', name=''):
     msg = (f"There are {outside.sum():d} values that do not fall within "
            f"the given limits {str(lims)}"
            f" of {name}" if name != "" else "")
+
     if any(outside) & (action == 'raise'):
         raise UnitError(msg)
     elif action == 'warn':
