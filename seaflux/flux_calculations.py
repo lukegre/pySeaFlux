@@ -7,9 +7,9 @@ for all other functions in this script (Weiss 1974, Dickson et al. 2007 ...)
 
 https://doi.org/10.5194/gmd-2019-46
 """
-from . import aux_eqs as eqs
-from . import gas_transfer_CO2
-from . import unit_checks as check
+from . import auxiliary_equations as eqs
+from . import gas_transfer_velocity
+from . import check_units as check
 import warnings
 
 
@@ -20,7 +20,7 @@ def flux_woolf2016_rapid(
     pCO2_air_uatm,
     press_hPa,
     wind_ms,
-    kw_func=gas_transfer_CO2.k_Ni00,
+    kw_func=gas_transfer_velocity.k_Ni00,
     cool_skin_bias=-0.14,
     salty_skin_bias=0.1,
 ):
@@ -168,7 +168,7 @@ def flux_bulk(
     pCO2_air_uatm,
     press_hPa,
     wind_ms,
-    kw_func=gas_transfer_CO2.k_Ni00
+    kw_func=gas_transfer_velocity.k_Ni00
 ):
     """
     Calculates bulk air-sea CO2 fluxes: FCO2 = kw * K0 * dfCO2, without

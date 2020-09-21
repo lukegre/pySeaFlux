@@ -1,7 +1,9 @@
 from . import check_units as check
 from . import vapour_pressure as vapress
+from . utils import preserve_xda
 
 
+@preserve_xda
 def solubility_weiss1974(salt, temp_K, press_atm=1):
     """
     Calculates the solubility of CO2 in sea water for the calculation of

@@ -1,4 +1,4 @@
-from . import unit_checks as check
+from . import check_units as check
 
 
 def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
