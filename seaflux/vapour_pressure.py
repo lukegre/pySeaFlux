@@ -1,4 +1,4 @@
-from . import unit_checks as check
+from . import check_units as check
 
 
 def weiss1980(salt, temp_K):

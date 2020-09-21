@@ -75,7 +75,7 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
     # Not getting the exact equilibrator xCO2
     xCO2eq = fCO2sw * dT / Peq
 
-    pCO2SW = fCO2sw / eqs.virial_coeff(Tsw, Peq, xCO2eq)
+    pCO2SW = fCO2sw / virial_coeff(Tsw, Peq, xCO2eq)
     pCO2SW_uatm = pCO2SW * 1e6
 
     return pCO2SW_uatm
@@ -147,7 +147,7 @@ def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     # one would have to use pCO2 / Peq to get real xCO2
     xCO2eq = pCO2sw * dT / Peq
 
-    fCO2sw = pCO2sw * eqs.virial_coeff(Tsw, Peq, xCO2eq)
+    fCO2sw = pCO2sw * virial_coeff(Tsw, Peq, xCO2eq)
     fCO2sw_uatm = fCO2sw * 1e6
 
     return fCO2sw_uatm

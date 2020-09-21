@@ -7,9 +7,11 @@ for all other functions in this script (Weiss 1974, Dickson et al. 2007 ...)
 
 https://doi.org/10.5194/gmd-2019-46
 """
-from . import auxiliary_equations as eqs
 from . import gas_transfer_velocity
 from . import check_units as check
+from . import fco2_pco2_conversion as f2p
+from . import solubility as sol
+from . utils import preserve_xda
 import warnings
 
 
@@ -116,12 +118,12 @@ def flux_woolf2016_rapid(
     pCO2air = check.CO2_mol(pCO2air)
     wind_ms = check.wind_ms(wind_ms)
 
-    fCO2sea = pCO2sea * eqs.virial_coeff(SSTfnd_K, press_atm)
-    fCO2air = pCO2air * eqs.virial_coeff(SSTskn_K, press_atm)
+    fCO2sea = pCO2sea * f2p.virial_coeff(SSTfnd_K, press_atm)
+    fCO2air = pCO2air * f2p.virial_coeff(SSTskn_K, press_atm)
 
     # units in mol . L-1 . atm-1
-    K0fnd = eqs.solubility_woolf2016(SSSfnd, SSTfnd_K, SSTdelta, press_atm)
-    K0skn = eqs.solubility_woolf2016(SSSskn, SSTskn_K, SSTdelta, press_atm)
+    K0fnd = sol.solubility_woolf2016(SSSfnd, SSTfnd_K, SSTdelta, press_atm)
+    K0skn = sol.solubility_woolf2016(SSSskn, SSTskn_K, SSTdelta, press_atm)
 
     # molar mass of carbon (gC/mol * kg/g)
     mC = 12.0108 * 1000  # kg . mol-1
@@ -161,6 +163,7 @@ def flux_woolf2016_rapid(
     return CO2flux_woolfe
 
 
+@preserve_xda
 def flux_bulk(
     temp_bulk_C,
     salt_bulk,
@@ -206,12 +209,6 @@ def flux_bulk(
         per day)
     """
     from numpy import array
-    from xarray import DataArray
-
-    if isinstance(pCO2_bulk_uatm, DataArray):
-        var = pCO2_bulk_uatm.copy()  # attribute preservation
-    else:
-        var = None
 
     press_atm = array(press_hPa) / 1013.25
 
@@ -231,10 +228,10 @@ def flux_bulk(
     pCO2air = check.CO2_mol(pCO2air)
     wind_ms = check.wind_ms(wind_ms)
 
-    fCO2sea = pCO2sea * eqs.virial_coeff(SSTfnd_K, press_atm)
-    fCO2air = pCO2air * eqs.virial_coeff(SSTfnd_K, press_atm)
+    fCO2sea = f2p.pCO2_to_fCO2(pCO2sea, SSTfnd_K, press_atm)
+    fCO2air = f2p.pCO2_to_fCO2(pCO2air, SSTfnd_K, press_atm)
 
-    K0blk = eqs.solubility_weiss1974(SSSfnd, SSTfnd_K, press_atm)
+    K0blk = sol.solubility_weiss1974(SSSfnd, SSTfnd_K, press_atm)
 
     # molar mas of carbon in g . mmol-1
     mC = 12.0108 * 1000  # (g . mol-1) / (mmol . mol-1)
@@ -249,16 +246,11 @@ def flux_bulk(
     # flux = gC . m-2 . day-1
     CO2flux_bulk = kw * K0blk * (fCO2sea - fCO2air) * mC
 
-    if isinstance(var, DataArray):
-        kw_name = kw_func.__name__[2:]
-        attributes = dict(
-            units="gC / m2 / day",
-            description=f"sea-air CO2 fluxes calculated with {kw_name}",
-            long_name="sea-air CO2 fluxes",
-        )
+    kw_name = kw_func.__name__[2:]
+    meta = dict(
+        units="gC / m2 / day",
+        description=f"sea-air CO2 fluxes calculated with {kw_name}",
+        long_name="sea-air CO2 fluxes",
+    )
 
-        CO2flux_bulk = DataArray(
-            data=CO2flux_bulk, coords=var.coords, attrs=attributes
-        )
-
-    return CO2flux_bulk
+    return CO2flux_bulk, meta

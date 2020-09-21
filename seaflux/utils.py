@@ -74,23 +74,29 @@ def preserve_xda(func):
                 break
 
         out = func(*args, **kwargs)
+
         istuple = isinstance(out, tuple)
         if istuple:
             second_isdict = isinstance(out[1], dict)
+        else:
+            return out
 
+        if (xda is None) & second_isdict:
+            return out[0]
+
+        attrs = xda.attrs
         if second_isdict:
             data = out[0]
-            attrs = out[1]
+            attrs.update(out[1])
         else:
             data = out
-            attrs = {}
+            attrs = xda.attrs
 
         out = xr.DataArray(
             data=data,
             dims=xda.dims,
             coords=xda.coords,
-            attrs=attrs
-        )
+            attrs=attrs)
         return out
 
     return wrapper

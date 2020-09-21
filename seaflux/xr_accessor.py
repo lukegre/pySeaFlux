@@ -18,5 +18,6 @@ class SeafluxUtils:
         lon = xda[lon_name].values
 
         area = area_grid(lat, lon, return_dataarray=True)
+        area = area.rename(lat=lat_name, lon=lon_name)
 
         return area
