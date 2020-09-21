@@ -7,12 +7,12 @@ class SeafluxUtils:
         self._obj = data
 
     def __call__(self, lat_name='lat', lon_name='lon'):
-        from . area_grid import area_grid
+        from . utils import area_grid
 
         xda = self._obj
 
-        assert lat_name in xda, f'{lat_name} is not in data array'
-        assert lon_name in xda, f'{lon_name} is not in data array'
+        assert lat_name in xda.coords, f'{lat_name} is not in data array'
+        assert lon_name in xda.coords, f'{lon_name} is not in data array'
 
         lat = xda[lat_name].values
         lon = xda[lon_name].values
