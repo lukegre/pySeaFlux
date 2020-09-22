@@ -12,7 +12,7 @@ seaflux
 
 **WARNING: STILL IN DEVELOPMENT**
 
-**INSTALLATION:** `pip install git+git://github.com/tangentlabs/django-oscar.git`
+**INSTALLATION:** :code:`pip install https://github.com/luke-gregor/SeaFlux.git`
 
 With the following functionality
 
