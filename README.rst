@@ -14,10 +14,12 @@ seaflux
 
 With the following functionality
 
-- Calculate sea-air fluxes: bulk, rapid-equilibration model (Woolf et al. 2016)
+- Calculate sea-air fluxes using the bulk formulation
 - Convert pCO2 to fCO2 and *vice versa*. 
 - Correct or adjust pCO2 for temperature changes
-- Download NOAA Marine Boundary Layer xCO2 and convert to pCO2 if pressure, SST and salinity provided :code:`SeaFlux.utils.noaa_mbl_to_pCO2`
+- Scale $k_w$ to 14C bomb values for wind products using Wanninkhof's (1992) second moment of the wind speed (requires standard deviation of the wind)
+- Download NOAA Marine Boundary Layer xCO2 and related functions for pCO2 conversion`
+- Calculate the grid cell area (in m$^2$) for a grid of latitudes and longitudes - also works as an xarray method (`xda.area()`)
 
 To Do
 -----
