@@ -27,7 +27,7 @@ setup(
     name='SeaFlux',
     author="Luke Gregor",
     author_email='lukegre@gmail.com	',
-    description=long_description,
+    description='Calculate sea fluxes',
     keywords='SeaFlux',
     license="GNUv3",
     classifiers=CLASSIFIERS,
