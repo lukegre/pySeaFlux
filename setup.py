@@ -32,8 +32,7 @@ setup(
     license="GNUv3",
     classifiers=CLASSIFIERS,
     url='https://github.com/luke-gregor/SeaFlux',
-    use_scm_version={
-    },
+    use_scm_version=True,
     long_description=long_description,
     packages=find_packages(),
     install_requires=install_requires,
