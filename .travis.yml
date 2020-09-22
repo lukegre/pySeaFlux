@@ -34,7 +34,7 @@ script:
   - coverage run --source seaflux -m py.test
   - coverage report
   - pushd docs   # no docs yet
-  - ./ci/run-linter.sh
+  # - ./ci/run-linter.sh
 
 after_success:
   - coveralls  # Set this up for your GitHub repo
