@@ -12,6 +12,8 @@ seaflux
 
 **WARNING: STILL IN DEVELOPMENT**
 
+**INSTALLATION:** `pip install git+git://github.com/tangentlabs/django-oscar.git`
+
 With the following functionality
 
 - Calculate sea-air fluxes using the bulk formulation
