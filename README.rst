@@ -21,6 +21,7 @@ With the following functionality
 - Download NOAA Marine Boundary Layer xCO2 and related functions for pCO2 conversion`
 - Calculate the grid cell area (in m :math:`^2`) for a grid of latitudes and longitudes - also works as an xarray method (`xda.area()`)
 
+-----
 To Do
 -----
 - unit errors should only happen when more than 50% of non-nan values are not valid. Otherwise, raise warning and make output :code:`nan`. Will double up with :code:`pyCO2SYS`.
