@@ -26,14 +26,14 @@ CLASSIFIERS = [
 setup(
     name='SeaFlux',
     author="Luke Gregor",
-    author_email='lukegre@gmail.com	',
+    author_email='lukegre@gmail.com',
     description='Calculate sea fluxes',
     keywords='SeaFlux',
     license="GNUv3",
     classifiers=CLASSIFIERS,
     url='https://github.com/luke-gregor/SeaFlux',
     use_scm_version=True,
-    long_description=long_description,
+    long_description='long_description',
     packages=find_packages(),
     install_requires=install_requires,
 
