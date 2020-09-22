@@ -25,18 +25,20 @@ CLASSIFIERS = [
 
 setup(
     name='SeaFlux',
-    author="Luke Gregor",
+    author='Luke Gregor',
     author_email='lukegre@gmail.com	',
     description='Calculate sea fluxes',
     keywords='SeaFlux',
-    license="GNUv3",
+    license='GNUv3',
     classifiers=CLASSIFIERS,
     url='https://github.com/luke-gregor/SeaFlux',
-    use_scm_version=True,
+    use_scm_version={
+        'version_scheme': 'guess-next-dev',
+        'local_scheme': 'dirty-tag',
+    },
     long_description=long_description,
     packages=find_packages(),
     install_requires=install_requires,
-
     test_suite='tests',
     tests_require=test_requirements,
     setup_requires=[
