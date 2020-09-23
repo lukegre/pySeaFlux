@@ -36,7 +36,7 @@ setup(
         'version_scheme': 'guess-next-dev',
         'local_scheme': 'dirty-tag',
     },
-    long_description='long_description',
+    long_description=long_description,
     packages=find_packages(),
     install_requires=install_requires,
     test_suite='tests',
