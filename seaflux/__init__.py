@@ -1,5 +1,3 @@
-from setuptools_scm import get_version
-
 from . import atmospheric as atm
 from . import auxiliary_equations as eqs
 from . import gas_transfer_velocity
@@ -11,7 +9,10 @@ from .utils import area_grid
 
 from . import xr_accessor as _accessor
 
+from pkg_resources import get_distribution, DistributionNotFound
+
 try:
-    __version__ = get_version()
-except:
-    __version__ = 'undefined'
+    __version__ = get_distribution(__name__).version
+except DistributionNotFound:
+    # package is not installed
+    pass
