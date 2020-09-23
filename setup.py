@@ -37,6 +37,7 @@ setup(
         'local_scheme': 'dirty-tag',
     },
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     packages=find_packages(),
     install_requires=install_requires,
     test_suite='tests',
