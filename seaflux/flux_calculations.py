@@ -7,198 +7,12 @@ for all other functions in this script (Weiss 1974, Dickson et al. 2007 ...)
 
 https://doi.org/10.5194/gmd-2019-46
 """
-from . import aux_eqs as eqs
-from . import gas_transfer_CO2
-from . import unit_checks as check
+from . import gas_transfer_velocity
+from . import check_units as check
+from . import fco2_pco2_conversion as f2p
+from . import solubility as sol
+from . utils import preserve_xda
 import warnings
-
-
-def atm_xCO2_to_pCO2(xCO2_ppm, slp_hPa, tempSW_C, salt):
-    """
-    Convert atmospheric xCO2 to pCO2 with correction for water vapour pressure
-        pCO2atm = xCO2atm * (Press - pH2O)
-
-    Parameters
-    ----------
-    xCO2_ppm : array
-        atmospheric, or marine boundary layer mole fraction of CO2.
-    tempSW_C : array
-        sea water temperature in degrees C
-    pres_hPa : array
-        atmospheric pressure in hecto Pascal
-    salt : array
-        sea surface salinity in PSU
-
-    Returns
-    -------
-    pCO2atm: np.ndaarray
-        note that ouptut will be an np.ndarray regardless of input
-    """
-
-    from numpy import array
-
-    xCO2 = array(xCO2_ppm)
-    # check units and mask where outsider of range
-    Tsw = check.temp_K(tempSW_C + 273.15)
-    Ssw = check.salt(salt)
-    Patm = check.pres_atm(slp_hPa / 1013.25)
-
-    pH2O = eqs.vapress_dickson2007(Ssw, Tsw)
-
-    pCO2atm = xCO2 * (Patm - pH2O)
-
-    return pCO2atm
-
-
-def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
-    """
-    Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
-    equation would simply be:
-        pCO2sw = fCO2sw / virial_exp
-    where the virial expansion is calculated without xCO2
-
-    We get a simple approximate for equilibrator xCO2 with:
-        xCO2eq = fCO2sw * deltaTemp(sw - eq) / press_eq
-
-    pCO2sw is then calculated with:
-        pCO2sw = fCO2sw / virial_exp(xCO2eq)
-
-    Parameters
-    ----------
-    fCO2SW_uatm : array
-        seawater fugacity of CO2 in micro atmospheres
-    tempSW_C : array
-        sea water temperature in degrees C
-    pres_hPa : array
-        equilibrator pressure in hecto Pascals
-    tempEQ_C : array
-        equilibrator temperature in degrees C
-
-    Returns
-    -------
-    pCO2SW_uatm : array
-        partial pressure of CO2 in seawater
-
-    Note
-    ----
-    In FluxEngine, they account fully solve for the original xCO2 that is used
-    in the calculation of the virial exponent. I use the first estimate of
-    xCO2 (based on fCO2 rather than pCO2). The difference between the two
-    approaches is so small that it is not significant to be concerned. Their
-    correction is more precise, but the difference between their iterative
-    correction and our approximation is on the order of 1e-14 atm (1e-8 uatm).
-
-    Examples
-    --------
-    >>> fCO2_to_pCO2(380, 8)
-    381.50806485658234
-    >>> fCO2_to_pCO2(380, 8, pres_hPa=985)
-    381.4659553134281
-    >>> fCO2_to_pCO2(380, 8, pres_hPa=985, tempEQ_C=14)
-    381.466027968504
-    """
-
-    from numpy import array
-
-    # if equilibrator inputs are None, tempEQ=tempSW
-    if tempEQ_C is None:
-        tempEQ_was_None = True
-        tempEQ_C = tempSW_C
-    else:
-        tempEQ_was_None = False
-
-    # standardise the inputs and convert units
-    fCO2sw = check.CO2_mol(fCO2SW_uatm * 1e-6)
-    Tsw = check.temp_K(tempSW_C + 273.15)
-    Teq = check.temp_K(tempEQ_C + 273.15)
-    Peq = check.pres_atm(pres_hPa / 1013.25)
-
-    # calculate the CO2 diff due to equilibrator and seawater temperatures
-    # if statement is there to save a bit of time
-    if tempEQ_was_None:
-        dT = 1.
-    else:
-        dT = eqs.temperature_correction(Tsw, Teq)
-
-    # a best estimate of xCO2 - this is an aproximation
-    # one would have to use pCO2 / Peq to get real xCO2
-    # Not getting the exact equilibrator xCO2
-    xCO2eq = fCO2sw * dT / Peq
-
-    pCO2SW = fCO2sw / eqs.virial_coeff(Tsw, Peq, xCO2eq)
-    pCO2SW_uatm = pCO2SW * 1e6
-
-    return pCO2SW_uatm
-
-
-def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
-    """
-    Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
-    equation would simply be:
-        fCO2sw = pCO2sw / virial_exp
-    where the virial expansion is calculated without xCO2
-
-    We get a simple approximate for equilibrator xCO2 with:
-        xCO2eq = pCO2sw * deltaTemp(sw - eq) / press_eq
-
-    fCO2sw is then calculated with:
-        fCO2sw = pCO2sw * virial_exp(xCO2eq)
-
-    Parameters
-    ----------
-    pCO2SW_uatm : array
-        seawater fugacity of CO2 in micro atmospheres
-    tempSW_C : array
-        sea water temperature in degrees C/K
-    tempEQ_C : array
-        equilibrator temperature in degrees C/K
-    pres_hPa : array
-        pressure in kilo Pascals
-
-    Returns
-    -------
-    fCO2SW_uatm : array
-        partial pressure of CO2 in seawater
-
-    Note
-    ----
-    In FluxEngine, they account for the change in xCO2. This error is so small
-    that it is not significant to be concerned about it. Their correction is
-    more precise, but the difference between their iterative correction and our
-    approximation is less than 1e-14 atm (or 1e-8 uatm).
-
-    Examples
-    --------
-    >>> pCO2_to_fCO2(380, 8)
-    378.49789637942064
-    >>> pCO2_to_fCO2(380, 8, pres_hPa=985)
-    378.53967828231225
-    >>> pCO2_to_fCO2(380, 8, pres_hPa=985, tempEQ_C=14)
-    378.53960618459695
-    """
-
-    # if equilibrator inputs are None then make defaults Patm=1, tempEQ=tempSW
-    if tempEQ_C is None:
-        tempEQ_C = tempSW_C
-    if pres_hPa is None:
-        pres_hPa = 1013.25
-
-    # standardise the inputs and convert units
-    pCO2sw = check.CO2_mol(pCO2SW_uatm * 1e-6)
-    Tsw = check.temp_K(tempSW_C + 273.15)
-    Teq = check.temp_K(tempEQ_C + 273.15)
-    Peq = check.pres_atm(pres_hPa / 1013.25)
-
-    # calculate the CO2 diff due to equilibrator and seawater temperatures
-    dT = eqs.temperature_correction(Tsw, Teq)
-    # a best estimate of xCO2 - this is an aproximation
-    # one would have to use pCO2 / Peq to get real xCO2
-    xCO2eq = pCO2sw * dT / Peq
-
-    fCO2sw = pCO2sw * eqs.virial_coeff(Tsw, Peq, xCO2eq)
-    fCO2sw_uatm = fCO2sw * 1e6
-
-    return fCO2sw_uatm
 
 
 def flux_woolf2016_rapid(
@@ -208,8 +22,7 @@ def flux_woolf2016_rapid(
     pCO2_air_uatm,
     press_hPa,
     wind_ms,
-    kw_func=gas_transfer_CO2.k_Ni00,
-    kw_scaling=None,
+    kw_func=gas_transfer_velocity.k_Ni00,
     cool_skin_bias=-0.14,
     salty_skin_bias=0.1,
 ):
@@ -305,12 +118,12 @@ def flux_woolf2016_rapid(
     pCO2air = check.CO2_mol(pCO2air)
     wind_ms = check.wind_ms(wind_ms)
 
-    fCO2sea = pCO2sea * eqs.virial_coeff(SSTfnd_K, press_atm)
-    fCO2air = pCO2air * eqs.virial_coeff(SSTskn_K, press_atm)
+    fCO2sea = pCO2sea * f2p.virial_coeff(SSTfnd_K, press_atm)
+    fCO2air = pCO2air * f2p.virial_coeff(SSTskn_K, press_atm)
 
     # units in mol . L-1 . atm-1
-    K0fnd = eqs.solubility_woolf2016(SSSfnd, SSTfnd_K, SSTdelta, press_atm)
-    K0skn = eqs.solubility_woolf2016(SSSskn, SSTskn_K, SSTdelta, press_atm)
+    K0fnd = sol.solubility_woolf2016(SSSfnd, SSTfnd_K, SSTdelta, press_atm)
+    K0skn = sol.solubility_woolf2016(SSSskn, SSTskn_K, SSTdelta, press_atm)
 
     # molar mass of carbon (gC/mol * kg/g)
     mC = 12.0108 * 1000  # kg . mol-1
@@ -327,7 +140,7 @@ def flux_woolf2016_rapid(
     # KW : UNIT ANALYSIS
     # kw = (cm / 100) / (hr / 24)
     # kw = m . day-1
-    kw = kw_func(wind_ms, SSTskn_C, kw_scaling) * (24 / 100)
+    kw = kw_func(wind_ms, SSTskn_C) * (24 / 100)
 
     # FLUX : UNIT ANALYSIS
     # flux = (m . day-1) * (g . m-3)
@@ -350,6 +163,7 @@ def flux_woolf2016_rapid(
     return CO2flux_woolfe
 
 
+@preserve_xda
 def flux_bulk(
     temp_bulk_C,
     salt_bulk,
@@ -357,8 +171,7 @@ def flux_bulk(
     pCO2_air_uatm,
     press_hPa,
     wind_ms,
-    kw_func=gas_transfer_CO2.k_Ni00,
-    kw_scaling=None,
+    kw_func=gas_transfer_velocity.k_Ni00
 ):
     """
     Calculates bulk air-sea CO2 fluxes: FCO2 = kw * K0 * dfCO2, without
@@ -396,12 +209,6 @@ def flux_bulk(
         per day)
     """
     from numpy import array
-    from xarray import DataArray
-
-    if isinstance(pCO2_bulk_uatm, DataArray):
-        var = pCO2_bulk_uatm.copy()  # attribute preservation
-    else:
-        var = None
 
     press_atm = array(press_hPa) / 1013.25
 
@@ -421,10 +228,10 @@ def flux_bulk(
     pCO2air = check.CO2_mol(pCO2air)
     wind_ms = check.wind_ms(wind_ms)
 
-    fCO2sea = pCO2sea * eqs.virial_coeff(SSTfnd_K, press_atm)
-    fCO2air = pCO2air * eqs.virial_coeff(SSTfnd_K, press_atm)
+    fCO2sea = f2p.pCO2_to_fCO2(pCO2sea, SSTfnd_K, press_atm)
+    fCO2air = f2p.pCO2_to_fCO2(pCO2air, SSTfnd_K, press_atm)
 
-    K0blk = eqs.solubility_weiss1974(SSSfnd, SSTfnd_K, press_atm)
+    K0blk = sol.solubility_weiss1974(SSSfnd, SSTfnd_K, press_atm)
 
     # molar mas of carbon in g . mmol-1
     mC = 12.0108 * 1000  # (g . mol-1) / (mmol . mol-1)
@@ -432,23 +239,18 @@ def flux_bulk(
     # KW : UNIT ANALYSIS
     # kw = (cm . hr-1) * hr . day-1 . cm-1 . m
     # kw = m . day-1
-    kw = kw_func(wind_ms, SSTfnd_C, kw_scaling) * (24 / 100)
+    kw = kw_func(wind_ms, SSTfnd_C) * (24 / 100)
 
     # flux = (m . day-1) .  (mol . L-1 . atm-1) . atm . (gC . mmol-1)
     # flux = (m . day-1) . (mmol . m-3 . atm-1) . atm . (gC . mmol-1)
     # flux = gC . m-2 . day-1
     CO2flux_bulk = kw * K0blk * (fCO2sea - fCO2air) * mC
 
-    if isinstance(var, DataArray):
-        kw_name = kw_func.__name__[2:]
-        attributes = dict(
-            units="gC / m2 / day",
-            description=f"sea-air CO2 fluxes calculated with {kw_name}",
-            long_name="sea-air CO2 fluxes",
-        )
+    kw_name = kw_func.__name__[2:]
+    meta = dict(
+        units="gC / m2 / day",
+        description=f"sea-air CO2 fluxes calculated with {kw_name}",
+        long_name="sea-air CO2 fluxes",
+    )
 
-        CO2flux_bulk = DataArray(
-            data=CO2flux_bulk, coords=var.coords, attrs=attributes
-        )
-
-    return CO2flux_bulk
+    return CO2flux_bulk, meta
