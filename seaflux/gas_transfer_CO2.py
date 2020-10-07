@@ -61,14 +61,15 @@ def kw_scaled(wind_speed, wind_grid_stdev, temp_C, ice_frac, scaling=16):
     T = array(temp_C)
     ice = array(ice_frac)
     
-    U2 = Uavg**2 + Ustd**2
+    Uavg2 = Uavg**2
+    U2 = Uavg2 + Ustd**2
     
     Sc = schmidt_number(T)
     Sc660 = (Sc / 660) ** -0.5
     
     a = calculate_scaled_alpha(U2, Sc660, ice, scaling)
     
-    k = a * U2 * Sc660
+    k = a * Uavg2 * Sc660
     
     attrs = {
         "long_name": "Gas transfer velocity for CO2",
