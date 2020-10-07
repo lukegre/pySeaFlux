@@ -56,8 +56,13 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
 
     pH2O = vapress.weiss1980(S, T)
     K0 = K0 / (P - pH2O)
+    meta = {
+        'description': 'CO2 solubility in seawater using the formulation of Weiss 1974',
+        'units': 'mol/L/atm',
+        'long_name': 'CO2 solubility in seawater',
+    }
 
-    return K0  # units mol/L/atm
+    return K0, meta  # units mol/L/atm
 
 
 def solubility_woolf2016(salt, temp_K, deltaT, press_atm=1):
