@@ -1,6 +1,8 @@
 from . import unit_checks as check
+from . utils import preserve_xda
 
 
+@preserve_xda
 def solubility_weiss1974(salt, temp_K, press_atm=1):
     """
     Calculates the solubility of CO2 in sea water for the calculation of
@@ -53,8 +55,18 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
 
     pH2O = vapress_weiss1980(S, T)
     K0 = K0 / (P - pH2O)
+    
+    attrs = dict(
+        long_name='co2_solubility',
+        units='mol/L/atm',
+        description=(
+            'CO2 solubility calculated using Weiss (1974) with a correction for '
+            'water vapour pressure (Weiss, 1980). Coeffcients are taken from '
+            'the table in Wanninkhof (2014). '
+        ),
+    )
 
-    return K0  # units mol/L/atm
+    return K0, attrs  # units mol/L/atm
 
 
 def solubility_woolf2016(salt, temp_K, deltaT, press_atm=1):

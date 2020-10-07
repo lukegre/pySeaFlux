@@ -265,6 +265,8 @@ def preserve_xda(func):
         istuple = isinstance(out, tuple)
         if istuple:
             second_isdict = isinstance(out[1], dict)
+        else:
+            second_isdict = False
         
         if second_isdict:
             data = out[0]
