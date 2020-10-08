@@ -68,7 +68,7 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
 def solubility_woolf2016(salt, temp_K, deltaT, press_atm=1):
     """
     A wrapper around solubility calculated using the Weiss (1974) approach.
-    This is taken from the FluxEngine script.
+    From FluxEngine (Shutler et al, 2016; and Holding et al, 2019).
 
     Parameters
     ----------
