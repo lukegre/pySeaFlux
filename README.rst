@@ -11,7 +11,7 @@ SeaFlux
         :target: https://www.gnu.org/licenses/gpl-3.0
 
 
-Planning to publish alongside Fay, Gregor, McKinley ... (2020). 
+Planning to publish alongside Fay, Gregor, McKinley ... (2020). DOI will be released when code has been checked/tested by various contributors. Contributors will be part of the SeaFlux package citation. 
 
 
 Installing
