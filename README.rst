@@ -1,5 +1,5 @@
 ===============================
-seaflux
+SeaFlux
 ===============================
 
 
@@ -9,6 +9,9 @@ seaflux
         :target: https://pypi.org/project/seaflux
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
         :target: https://www.gnu.org/licenses/gpl-3.0
+
+
+Planning to publish alongside Fay, Gregor, McKinley ... (2020). 
 
 
 Installing
