@@ -124,7 +124,7 @@ def noaa_mbl_to_dataset(
         xda = xda.interp(lat=target_lat, method=interp_method)
 
     if target_lon is not None:
-        history += f"longitude broadcast"
+        history += "longitude broadcast"
         lon = xr.DataArray(np.ones_like(target_lon), dims=["lon"], coords=[target_lon])
         xda = xda * lon
 
