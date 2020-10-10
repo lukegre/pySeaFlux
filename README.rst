@@ -2,9 +2,6 @@
 SeaFlux
 ===============================
 
-
-.. image:: https://travis-ci.com/luke-gregor/SeaFlux.svg?branch=master
-        :target: https://travis-ci.com/luke-gregor/SeaFlux
 .. image:: https://badgen.net/pypi/v/seaflux
         :target: https://pypi.org/project/seaflux
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
