@@ -28,11 +28,19 @@ setup(
     license="GNUv3",
     classifiers=CLASSIFIERS,
     url="https://github.com/luke-gregor/SeaFlux",
-    use_scm_version={"version_scheme": "guess-next-dev", "local_scheme": "dirty-tag",},
+    use_scm_version={
+        "version_scheme": "guess-next-dev",
+        "local_scheme": "dirty-tag",
+    },
     long_description=long_description,
     long_description_content_type="text/x-rst",
     packages=find_packages(),
-    install_requires=["numpy", "pandas", "xarray", "pooch",],
+    install_requires=[
+        "numpy",
+        "pandas",
+        "xarray",
+        "pooch",
+    ],
     test_suite="tests",
     tests_require=["pytest-cov"],
     setup_requires=[
