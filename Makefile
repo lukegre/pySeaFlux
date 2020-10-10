@@ -5,7 +5,7 @@ help:
 
 clean:  ## Clean up the temporary build and test directories
 	@echo Cleaning up build and test dirs
-	rm -rf *.egg* .eggs .coverage build dist
+	rm -rf *.egg* .eggs .coverage .pytest_cache build dist site
 
 lint: clean  ## Perform checks on your syntax (also cleans up builds)
 	@echo Linting with black and flake
@@ -23,3 +23,6 @@ build:  ## Build the files required to submit to Pypi (will first test)
 dev_env: clean  ## set up your python for developing
 	conda create -y --name seaflux-dev python==3.7
 	conda install -y -c conda-forge --name seaflux-dev --file requirements-dev.txt
+
+docs_deploy:  ## Comples and submits the documentation to GitHub pages
+	mkdocs gh-deploy
