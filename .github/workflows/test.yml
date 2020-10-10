@@ -25,7 +25,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Set up conda environment
-        run: conda-env create --file ./dev-environment.yml
+        run: |
+            conda-env create --file ./dev-environment.yml
+            conda activate seaflux-dev
 
       - run: isort --recursive --diff .
       - run: black -l 88 --check .
