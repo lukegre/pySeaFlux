@@ -6,13 +6,13 @@ dependencies:
   - pip
   - pytest-cov
   - flake8
-  - wheel
   - xarray
   - black==19.10b0  # this is NB, otherwise will fail
   - isort
   - pandas
   - numpy
   - pip:
+    - wheel
     - pre-commit
     - mkdocs
     - pooch
