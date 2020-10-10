@@ -24,20 +24,19 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies with pipenv
+      - name: Install dependencies with pip
         run: |
-          pip install pipenv
-          pipenv install --deploy --dev
+          pip install -r requirements
 
       - name: Linting and testing
         run: |
-          pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          pipenv run flake8 . --count --exit-zero --max-complexity=50 --max-line-length=90 --statistics
-          pipenv run pytest --cov --cov-fail-under=20
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=50 --max-line-length=90 --statistics
+          pytest --cov --cov-fail-under=20
 
       - name: build
         run: |
-          pipenv run python setup.py sdist bdist_wheel
+          python setup.py sdist bdist_wheel
 
       - name: pypi-publish
         uses: pypa/gh-action-pypi-publish@v1.1.0
