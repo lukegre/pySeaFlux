@@ -1,4 +1,4 @@
-name: seaflux
+name: seaflux-dev
 channels:
   - defaults
 dependencies:

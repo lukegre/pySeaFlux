@@ -27,7 +27,7 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
 
     Examples
     --------
-    # from Weiss (1974) Table 2 but with pH2O correction
+    from Weiss (1974) Table 2 but with pH2O correction
     >>> solubility_weiss1974(35, 299.15)
     0.029285284543519093
     """
