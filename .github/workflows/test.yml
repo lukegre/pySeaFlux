@@ -33,7 +33,7 @@ jobs:
 
       - name: Checking with flake8
         shell: bash -l {0}
-        run: flake8 --max-line-length=80
+        run: flake8
 
       - name: Running tests with pytest
         shell: bash -l {0}
