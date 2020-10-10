@@ -13,7 +13,7 @@ repos:
     name: black
     stages: [commit]
     language: system
-    entry: black
+    entry: black -l 88
     types: [python]
 
   - id: flake8
