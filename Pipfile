@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+numpy = "*"
+pandas = "*"
+xarray = "*"
+pooch = "*"
+mkdocs = "*"
+black = "*"
+flake8 = "*"
+pytest-cov = "*"
+
+[requires]
+python_version = "3.7"

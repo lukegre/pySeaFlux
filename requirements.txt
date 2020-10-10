@@ -1,6 +1,11 @@
-tqdm
+# core functionality
 numpy
-xarray
 pandas
-PyYAML
+xarray
 pooch
+
+# devlopment
+mkdocs
+black
+flake8
+pytest-cov
