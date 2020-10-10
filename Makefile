@@ -20,9 +20,5 @@ build:  ## Build the files required to submit to Pypi (will first test)
 	@echo Testing and then building
 	python setup.py sdist bdist_wheel
 
-dev_env: clean  ## set up your python for developing
-	conda create -y --name seaflux-dev python==3.7
-	conda install -y -c conda-forge --name seaflux-dev --file requirements-dev.txt
-
 docs_deploy:  ## Comples and submits the documentation to GitHub pages
 	mkdocs gh-deploy
