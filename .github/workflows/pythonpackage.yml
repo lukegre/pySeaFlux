@@ -26,7 +26,7 @@ jobs:
 
       - name: Install dependencies with pip
         run: |
-          pip install -r requirements
+          pip install -r requirements-dev.txt
 
       - name: Linting and testing
         run: |

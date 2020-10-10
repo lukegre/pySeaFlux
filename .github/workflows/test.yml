@@ -25,8 +25,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies with pip
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements-dev.txt
 
       - run: isort --recursive --diff .
       - run: black -l 88 --check .
