@@ -1,4 +1,5 @@
-site_name: My Docs
+site_name: SeaFlux
+repo_url: https://github.com/luke-gregor/seaflux
 
 theme:
     name: readthedocs
