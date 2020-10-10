@@ -1,5 +1,3 @@
-
-
 def atm_xCO2_to_pCO2(xCO2_ppm, slp_hPa, tempSW_C, salt):
     """
     Convert atmospheric xCO2 to pCO2 with correction for water vapour pressure
@@ -39,10 +37,7 @@ def atm_xCO2_to_pCO2(xCO2_ppm, slp_hPa, tempSW_C, salt):
 
 
 def noaa_mbl_to_dataset(
-    noaa_mbl_url,
-    target_lat=None,
-    target_lon=None,
-    interp_method='linear',
+    noaa_mbl_url, target_lat=None, target_lon=None, interp_method="linear",
 ):
     """
     Downloads the NOAA marine boundary layer xCO2 and grids it
@@ -79,19 +74,19 @@ def noaa_mbl_to_dataset(
         # find start line
         is_mbl_surface = False
         for start_line, line in enumerate(open(fname)):
-            if re.findall('MBL.*SURFACE', line):
+            if re.findall("MBL.*SURFACE", line):
                 is_mbl_surface = True
-            if not line.startswith('#'):
+            if not line.startswith("#"):
                 break
         if not is_mbl_surface:
             raise Exception(
-                'The file at the provided url is not an MBL SURFACE file. '
-                'Please check that you have provided the surface url. '
+                "The file at the provided url is not an MBL SURFACE file. "
+                "Please check that you have provided the surface url. "
             )
 
         # read fixed width file CO2
         df = pd.read_fwf(fname, skiprows=start_line, header=None, index_col=0)
-        df.index.name = 'date'
+        df.index.name = "date"
         # every second line is uncertainty
         df = df.iloc[:, ::2]
         # latitude is given as sin(lat)
@@ -100,13 +95,13 @@ def noaa_mbl_to_dataset(
         # resolve time properly
         year = (df.index.values - (df.index.values % 1)).astype(int)
         day_of_year = ((df.index.values - year) * 365 + 1).astype(int)
-        date_strings = ['{}-{:03d}'.format(*a) for a in zip(year, day_of_year)]
-        date = pd.to_datetime(date_strings, format='%Y-%j')
+        date_strings = ["{}-{:03d}".format(*a) for a in zip(year, day_of_year)]
+        date = pd.to_datetime(date_strings, format="%Y-%j")
         df = df.set_index(date)
 
         # renaming indexes (have to stack for that)
         df = df.stack()
-        index = df.index.set_names(['time', 'lat'])
+        index = df.index.set_names(["time", "lat"])
         df = df.set_axis(index)
 
         df.source = noaa_mbl_url
@@ -114,34 +109,33 @@ def noaa_mbl_to_dataset(
         return df
 
     history = (
-        f'[SeaFlux@{Timestamp.today():%Y-%m-%dT%H:%M}]: '
-        f'downloaded NOAA MBL data from {noaa_mbl_url}, ')
+        f"[SeaFlux@{Timestamp.today():%Y-%m-%dT%H:%M}]: "
+        f"downloaded NOAA MBL data from {noaa_mbl_url}, "
+    )
 
     df = download_and_read_noaa_mbl(noaa_mbl_url)
     xda = df.to_xarray()
 
     if target_lat is not None:
-        history += f'latitude interpolated with {interp_method}, '
+        history += f"latitude interpolated with {interp_method}, "
         xda = xda.interp(lat=target_lat, method=interp_method)
 
     if target_lon is not None:
-        history += f'longitude broadcast'
-        lon = xr.DataArray(
-            np.ones_like(target_lon),
-            dims=['lon'],
-            coords=[target_lon]
-        )
+        history += f"longitude broadcast"
+        lon = xr.DataArray(np.ones_like(target_lon), dims=["lon"], coords=[target_lon])
         xda = xda * lon
 
     xda.attrs = dict(
-        units='ppm',
-        product='NOAA Greenhouse Gas Marine Boundary Layer Reference',
+        units="ppm",
+        product="NOAA Greenhouse Gas Marine Boundary Layer Reference",
         history=history,
-        source='https://www.esrl.noaa.gov/gmd/ccgg/mbl/index.html',
+        source="https://www.esrl.noaa.gov/gmd/ccgg/mbl/index.html",
         description=(
-            'mole fraction of CO2 for the marine boundary layer varying by '
-            'latitude and time. Note that values are constant along '
-            'longitudes. '))
+            "mole fraction of CO2 for the marine boundary layer varying by "
+            "latitude and time. Note that values are constant along "
+            "longitudes. "
+        ),
+    )
 
     return xda
 
@@ -190,16 +184,15 @@ def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt, resample_freq=None
 
     inputs = [press_hPa, tempSW_C, salt]
     types = [isinstance(a, DataArray) for a in inputs]
-    assert all(types), 'All input arrays must be xr.DataArrays'
+    assert all(types), "All input arrays must be xr.DataArrays"
     shapes = {a.name: a.shape for a in inputs}
-    assert all_same(shapes.values()), f'all inputs shapes must match\n{shapes}'
-    dims = [d in ('lat', 'lon') for d in press_hPa.dims]
-    assert sum(dims) == 2, 'lat/lon must be dimensions of input arrays'
+    assert all_same(shapes.values()), f"all inputs shapes must match\n{shapes}"
+    dims = [d in ("lat", "lon") for d in press_hPa.dims]
+    assert sum(dims) == 2, "lat/lon must be dimensions of input arrays"
 
     xCO2atm_out = noaa_mbl_to_dataset(
-        noaa_mbl_url,
-        target_lat=press_hPa.lat.values,
-        target_lon=press_hPa.lon.values)
+        noaa_mbl_url, target_lat=press_hPa.lat.values, target_lon=press_hPa.lon.values
+    )
 
     xCO2atm = xCO2atm_out.copy()
     if resample_freq is None:
@@ -210,34 +203,40 @@ def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt, resample_freq=None
         warn(
             "A resampling frequency was not set or could not be inferred from "
             "the input arrays. Data will be reindexed to the nearest matching "
-            "xCO2 values.", UserWarning)
+            "xCO2 values.",
+            UserWarning,
+        )
 
-    xCO2atm = xCO2atm.reindex_like(press_hPa, method='nearest')
+    xCO2atm = xCO2atm.reindex_like(press_hPa, method="nearest")
 
     pCO2atm = DataArray(
         data=atm_xCO2_to_pCO2(xCO2atm, press_hPa, tempSW_C, salt),
         dims=press_hPa.dims,
         coords=press_hPa.coords,
-        name='pCO2atm_MBLnoaa',
+        name="pCO2atm_MBLnoaa",
         attrs=dict(
-        standard_name=(
-            'partial_pressure_of_carbon_dioxide_in_the_marine_boundary_layer'
+            standard_name=(
+                "partial_pressure_of_carbon_dioxide_in_the_marine_boundary_layer"
+            ),
+            short_name="pCO2mbl",
+            units="uatm",
+            description=(
+                "Atmospheric pCO2 for the marine boundary layer is calculated "
+                "from the NOAAs marine boundary layer pCO2 with: xCO2 * (Patm "
+                "- pH2O). Where pH2O is calculated using vapour pressure from "
+                "Dickson et al. (2007)"
+            ),
+            history=(
+                getattr(xCO2atm_out, "history", "").strip(";") + ";\n"
+                f"[SeaFlux@{Timestamp.today():%Y-%m-%dT%H:%M}]: "
+                f"pCO2 calculated from xCO2 * (Patm - pH2O), where "
+                f"pH2O is calculated with Dickson et al. (2007)"
+            ),
+            citation=(
+                "Ed Dlugokencky and Pieter Tans, NOAA/ESRL "
+                "(www.esrl.noaa.gov/gmd/ccgg/trends/)"
+            ),
         ),
-        short_name='pCO2mbl',
-        units='uatm',
-        description=(
-            'Atmospheric pCO2 for the marine boundary layer is calculated '
-            'from the NOAAs marine boundary layer pCO2 with: xCO2 * (Patm '
-            '- pH2O). Where pH2O is calculated using vapour pressure from '
-            'Dickson et al. (2007)'),
-        history=(
-            getattr(xCO2atm_out, 'history', '').strip(';') + ';\n'
-            f'[SeaFlux@{Timestamp.today():%Y-%m-%dT%H:%M}]: '
-            f'pCO2 calculated from xCO2 * (Patm - pH2O), where '
-            f'pH2O is calculated with Dickson et al. (2007)'),
-        citation=(
-            'Ed Dlugokencky and Pieter Tans, NOAA/ESRL '
-            '(www.esrl.noaa.gov/gmd/ccgg/trends/)'))
     )
 
     return pCO2atm

@@ -60,9 +60,9 @@ def kw_scaled(wind_speed, wind_grid_stdev, temp_C, ice_frac, scaling=16):
     Ustd = array(wind_grid_stdev)
     T = array(temp_C)
     ice = array(ice_frac)
-    
-    Uavg2 = Uavg**2
-    U2 = Uavg2 + Ustd**2
+
+    Uavg2 = Uavg ** 2
+    U2 = Uavg2 + Ustd ** 2
 
     Sc = schmidt_number(T)
     Sc660 = (Sc / 660) ** -0.5
@@ -73,20 +73,22 @@ def kw_scaled(wind_speed, wind_grid_stdev, temp_C, ice_frac, scaling=16):
 
     attrs = {
         "long_name": "Gas transfer velocity for CO2",
-        "units": 'cm/hr',
-        'alpha': a,
-        'description': (f"k = a * <U2> * Sc660 where a is scaled to a "
-                        f"global 14C bomb estimate of {scaling} cm/hr. "
-                        f"Note that the global kw is weighted by sea ice "
-                        f"cover, thus the mean of kw will not be "
-                        f"{scaling} cm/hr. "
-                        f"<U2> is the second moment of the wind speed "
-                        f"calculated as <Uavg^2 + Ustd^2>. "
-                        f"Sc660 is the Schmidt number for CO2 normalised "
-                        f"to 660 as in Wanninkhof (1992): (Sc / 660)^-0.5. "
-                        f"For more details on this calculation see "
-                        f"Sarmiento and Gruber (2006), Wanninkhof (2014) "
-                        f"and Sweeney et al. (2007). ")
+        "units": "cm/hr",
+        "alpha": a,
+        "description": (
+            f"k = a * <U2> * Sc660 where a is scaled to a "
+            f"global 14C bomb estimate of {scaling} cm/hr. "
+            f"Note that the global kw is weighted by sea ice "
+            f"cover, thus the mean of kw will not be "
+            f"{scaling} cm/hr. "
+            f"<U2> is the second moment of the wind speed "
+            f"calculated as <Uavg^2 + Ustd^2>. "
+            f"Sc660 is the Schmidt number for CO2 normalised "
+            f"to 660 as in Wanninkhof (1992): (Sc / 660)^-0.5. "
+            f"For more details on this calculation see "
+            f"Sarmiento and Gruber (2006), Wanninkhof (2014) "
+            f"and Sweeney et al. (2007). "
+        ),
     }
     return k, attrs
 
@@ -417,6 +419,6 @@ def k_Wa14(wind_ms, temp_C):
     check.wind_ms(U)
 
     Sc = schmidt_number(temp_C)
-    k = 0.251 * U**2 * (660 / Sc) ** 0.5
+    k = 0.251 * U ** 2 * (660 / Sc) ** 0.5
 
     return k

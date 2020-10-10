@@ -1,5 +1,3 @@
-
-
 def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
     """
     Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
@@ -66,7 +64,7 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
     # calculate the CO2 diff due to equilibrator and seawater temperatures
     # if statement is there to save a bit of time
     if tempEQ_was_None:
-        dT = 1.
+        dT = 1.0
     else:
         dT = eqs.temperature_correction(Tsw, Teq)
 

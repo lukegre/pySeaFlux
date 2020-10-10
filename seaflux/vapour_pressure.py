@@ -30,9 +30,7 @@ def weiss1980(salt, temp_K):
     S = check.salt(salt)
 
     # Equation comes straight from Weiss and Price (1980)
-    pH2O = exp(
-        +24.4543 - 67.4509 * (100 / T) - 4.8489 * log(T / 100) - 0.000544 * S
-    )
+    pH2O = exp(+24.4543 - 67.4509 * (100 / T) - 4.8489 * log(T / 100) - 0.000544 * S)
 
     return pH2O
 

@@ -2,7 +2,7 @@ class UnitError(Exception):
     pass
 
 
-def check_array_bounds(arr, lims, action='warn', name=''):
+def check_array_bounds(arr, lims, action="warn", name=""):
     """
     Checks that units are within the given limits. If not, then
     will raise/warn the user. Will always raise an error if more
@@ -45,21 +45,26 @@ def check_array_bounds(arr, lims, action='warn', name=''):
     if half_outside:
         raise UnitError(
             f"More than half of the values in {name} are outside the limits "
-            f"{str(lims)}. Check that input contains the correct units.")
+            f"{str(lims)}. Check that input contains the correct units."
+        )
 
-    msg = (f"There are {outside.sum():d} values that do not fall within "
-           f"the given limits {str(lims)}"
-           f" of {name}" if name != "" else "")
+    msg = (
+        f"There are {outside.sum():d} values that do not fall within "
+        f"the given limits {str(lims)}"
+        f" of {name}"
+        if name != ""
+        else ""
+    )
 
-    if any(outside) & (action == 'raise'):
+    if any(outside) & (action == "raise"):
         raise UnitError(msg)
-    elif action == 'warn':
+    elif action == "warn":
         if any(outside):
             warn(msg, Warning)
         arr[outside] = nan
-    elif action == 'quiet':
+    elif action == "quiet":
         arr[outside] = nan
-    elif action == 'ignore':
+    elif action == "ignore":
         pass
     else:
         raise Exception("action must have raise/warn/quiet/ignore as inputs")
@@ -69,44 +74,29 @@ def check_array_bounds(arr, lims, action='warn', name=''):
 
 def temp_K(temp_K):
     return check_array_bounds(
-        arr=temp_K,
-        lims=(270, 318.5),
-        action='warn',
-        name="temperature (K)"
+        arr=temp_K, lims=(270, 318.5), action="warn", name="temperature (K)"
     )
 
 
 def pres_atm(pres_atm):
     return check_array_bounds(
-        arr=pres_atm,
-        lims=(0.5, 1.5),
-        action='warn',
-        name="Pressure (atm)"
+        arr=pres_atm, lims=(0.5, 1.5), action="warn", name="Pressure (atm)"
     )
 
 
 def CO2_mol(CO2_mol):
     return check_array_bounds(
-        arr=CO2_mol,
-        lims=(5e-6, 0.08),
-        action='warn',
-        name="CO2 mole fraction (ppm)"
+        arr=CO2_mol, lims=(5e-6, 0.08), action="warn", name="CO2 mole fraction (ppm)"
     )
 
 
 def salt(salt):
     return check_array_bounds(
-        arr=salt,
-        lims=(0, 50),
-        action='warn',
-        name="Salinity (PSU)"
+        arr=salt, lims=(0, 50), action="warn", name="Salinity (PSU)"
     )
 
 
 def wind_ms(wind_ms):
     return check_array_bounds(
-        arr=wind_ms,
-        lims=(0, 50),
-        action='warn',
-        name="Wind speed (m/s)"
+        arr=wind_ms, lims=(0, 50), action="warn", name="Wind speed (m/s)"
     )

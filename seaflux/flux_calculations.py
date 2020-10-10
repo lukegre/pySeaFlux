@@ -7,12 +7,13 @@ for all other functions in this script (Weiss 1974, Dickson et al. 2007 ...)
 
 https://doi.org/10.5194/gmd-2019-46
 """
-from . import gas_transfer_velocity
+import warnings
+
 from . import check_units as check
 from . import fco2_pco2_conversion as f2p
+from . import gas_transfer_velocity
 from . import solubility as sol
-from . utils import preserve_xda
-import warnings
+from .utils import preserve_xda
 
 
 def flux_woolf2016_rapid(
@@ -171,7 +172,7 @@ def flux_bulk(
     pCO2_air_uatm,
     press_hPa,
     wind_ms,
-    kw_func=gas_transfer_velocity.k_Ni00
+    kw_func=gas_transfer_velocity.k_Ni00,
 ):
     """
     Calculates bulk air-sea CO2 fluxes: FCO2 = kw * K0 * dfCO2, without

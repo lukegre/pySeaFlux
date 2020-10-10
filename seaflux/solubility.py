@@ -1,6 +1,6 @@
 from . import check_units as check
 from . import vapour_pressure as vapress
-from . utils import preserve_xda
+from .utils import preserve_xda
 
 
 @preserve_xda
@@ -48,18 +48,15 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
 
     T100 = T / 100
     K0 = exp(
-        a1
-        + a2 * (100 / T)
-        + a3 * log(T100)
-        + S * (b1 + b2 * T100 + b3 * T100 ** 2)
+        a1 + a2 * (100 / T) + a3 * log(T100) + S * (b1 + b2 * T100 + b3 * T100 ** 2)
     )
 
     pH2O = vapress.weiss1980(S, T)
     K0 = K0 / (P - pH2O)
     meta = {
-        'description': 'CO2 solubility in seawater using the formulation of Weiss 1974',
-        'units': 'mol/L/atm',
-        'long_name': 'CO2 solubility in seawater',
+        "description": "CO2 solubility in seawater using the formulation of Weiss 1974",
+        "units": "mol/L/atm",
+        "long_name": "CO2 solubility in seawater",
     }
 
     return K0, meta  # units mol/L/atm

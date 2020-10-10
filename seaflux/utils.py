@@ -1,12 +1,13 @@
-
-
 def earth_radius(lat):
     from numpy import deg2rad, sin, cos
+
     lat = deg2rad(lat)
     a = 6378137
     b = 6356752
-    r = (((a**2 * cos(lat))**2 + (b**2 * sin(lat))**2) /
-        ((a * cos(lat))**2 + (b * sin(lat))**2))**0.5
+    r = (
+        ((a ** 2 * cos(lat)) ** 2 + (b ** 2 * sin(lat)) ** 2)
+        / ((a * cos(lat)) ** 2 + (b * sin(lat)) ** 2)
+    ) ** 0.5
 
     return r
 
@@ -35,13 +36,11 @@ def area_grid(lat, lon, return_dataarray=False):
         return area
     else:
         from xarray import DataArray
+
         xda = DataArray(
             area.T,
             dims=["lat", "lon"],
-            coords={
-                "lat": lat,
-                "lon": lon,
-            },
+            coords={"lat": lat, "lon": lon},
             attrs={
                 "long_name": "area_per_pixel",
                 "description": "area per pixel",
@@ -92,11 +91,7 @@ def preserve_xda(func):
             data = out
             attrs = xda.attrs
 
-        out = xr.DataArray(
-            data=data,
-            dims=xda.dims,
-            coords=xda.coords,
-            attrs=attrs)
+        out = xr.DataArray(data=data, dims=xda.dims, coords=xda.coords, attrs=attrs)
         return out
 
     return wrapper
