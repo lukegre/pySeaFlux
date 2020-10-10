@@ -103,9 +103,7 @@ class MetaArray(np.ma.MaskedArray):
             reprs["dtype"] = np.core.arrayprint.dtype_short_repr(self.dtype)
 
         # join keys with values and indentations
-        result = ",\n".join(
-            "{}{}={}".format(indents[k], k, reprs[k]) for k in keys
-        )
+        result = ",\n".join("{}{}={}".format(indents[k], k, reprs[k]) for k in keys)
         return prefix + result + ")"
 
     @staticmethod

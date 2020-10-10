@@ -91,9 +91,7 @@ def preserve_xda(func):
             data = out
             attrs = xda.attrs
 
-        out = xr.DataArray(
-            data=data, dims=xda.dims, coords=xda.coords, attrs=attrs
-        )
+        out = xr.DataArray(data=data, dims=xda.dims, coords=xda.coords, attrs=attrs)
         return out
 
     return wrapper

@@ -125,9 +125,7 @@ def noaa_mbl_to_dataset(
 
     if target_lon is not None:
         history += "longitude broadcast"
-        lon = xr.DataArray(
-            np.ones_like(target_lon), dims=["lon"], coords=[target_lon]
-        )
+        lon = xr.DataArray(np.ones_like(target_lon), dims=["lon"], coords=[target_lon])
         xda = xda * lon
 
     xda.attrs = dict(
@@ -145,9 +143,7 @@ def noaa_mbl_to_dataset(
     return xda
 
 
-def noaa_mbl_to_pCO2(
-    noaa_mbl_url, press_hPa, tempSW_C, salt, resample_freq=None
-):
+def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt, resample_freq=None):
     """
     This is a high-level function that downloads xCO2 (noaa_mbl_url) and
     calculates pCO2 for the given inputs. These need to be xarray.DataArrays
