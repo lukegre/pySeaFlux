@@ -87,10 +87,16 @@ class MetaArray(np.ma.MaskedArray):
             suffix=",",
         )
         reprs["mask"] = np.array2string(
-            self._mask, separator=", ", prefix=indents["mask"] + "mask=", suffix=","
+            self._mask,
+            separator=", ",
+            prefix=indents["mask"] + "mask=",
+            suffix=",",
         )
         reprs["meta"] = np.array2string(
-            self.meta, separator=", ", prefix=indents["meta"] + "meta=", suffix=","
+            self.meta,
+            separator=", ",
+            prefix=indents["meta"] + "meta=",
+            suffix=",",
         )
         reprs["fill_value"] = repr(self.fill_value)
         if dtype_needed:
@@ -297,7 +303,10 @@ def pres_atm(pres_atm):
 
 def CO2_mol(CO2_mol):
     return check_array_bounds(
-        arr=CO2_mol, lims=(5e-6, 0.08), action="warn", name="CO2 mole fraction (ppm)"
+        arr=CO2_mol,
+        lims=(5e-6, 0.08),
+        action="warn",
+        name="CO2 mole fraction (ppm)",
     )
 
 

@@ -194,7 +194,9 @@ def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt, resample_freq=None
     assert sum(dims) == 2, "lat/lon must be dimensions of input arrays"
 
     xCO2atm_out = noaa_mbl_to_dataset(
-        noaa_mbl_url, target_lat=press_hPa.lat.values, target_lon=press_hPa.lon.values
+        noaa_mbl_url,
+        target_lat=press_hPa.lat.values,
+        target_lon=press_hPa.lon.values,
     )
 
     xCO2atm = xCO2atm_out.copy()
