@@ -67,6 +67,7 @@ db.sqlite3-journal
 # Sphinx documentation
 docs/_build/
 docs/_generated/
+docs/site/
 
 # PyBuilder
 target/
