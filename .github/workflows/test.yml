@@ -27,7 +27,9 @@ jobs:
           environment-file: dev-environment.yml
           activate-environment: seaflux-dev
 
-      - run: isort --recursive --diff .
-      - run: black -l 88 --check .
-      - run: flake8 --max-line-length=88
-      - run: pytest --cov --cov-fail-under=20
+      - shell: bash -l {0}
+        run: |
+            isort --recursive --diff .
+            black -l 88 --check .
+            flake8 --max-line-length=88
+            pytest --cov --cov-fail-under=20
