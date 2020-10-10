@@ -8,7 +8,7 @@ dependencies:
   - flake8
   - wheel
   - xarray
-  - black==20.8b1  # this is NB, otherwise will fail
+  - black==19.10b0  # this is NB, otherwise will fail
   - isort
   - pandas
   - numpy
