@@ -36,6 +36,7 @@ setup(
     test_suite="tests",
     tests_require=["pytest-cov"],
     setup_requires=[
+        "wheel",
         "setuptools_scm",
         "setuptools>=30.3.0",
         "setuptools_scm_git_archive",
