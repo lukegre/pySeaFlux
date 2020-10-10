@@ -1,0 +1,16 @@
+name: seaflux
+channels:
+  - defaults
+dependencies:
+  - python==3.7
+  - pytest-cov
+  - flake8
+  - mkdocs
+  - wheel
+  - xarray
+  - black
+  - isort
+  - pooch
+  - pandas
+  - numpy
+
