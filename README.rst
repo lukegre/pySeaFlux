@@ -16,7 +16,11 @@ Installing
 
 GitHub
 ......
-``pip install https://github.com/luke-gregor/SeaFlux.git``
+``pip install git+https://github.com/luke-gregor/SeaFlux.git``
+
+PyPi
+....
+``pip install seaflux``
 
 
 Overview of functionality
