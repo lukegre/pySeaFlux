@@ -229,9 +229,6 @@ def flux_bulk(
     pCO2air = check.CO2_mol(pCO2air)
     wind_ms = check.wind_ms(wind_ms)
 
-    fCO2sea = f2p.pCO2_to_fCO2(pCO2sea, SSTfnd_K, press_atm)
-    fCO2air = f2p.pCO2_to_fCO2(pCO2air, SSTfnd_K, press_atm)
-
     K0blk = sol.solubility_weiss1974(SSSfnd, SSTfnd_K, press_atm)
 
     # molar mas of carbon in g . mmol-1
@@ -245,7 +242,7 @@ def flux_bulk(
     # flux = (m . day-1) .  (mol . L-1 . atm-1) . atm . (gC . mmol-1)
     # flux = (m . day-1) . (mmol . m-3 . atm-1) . atm . (gC . mmol-1)
     # flux = gC . m-2 . day-1
-    CO2flux_bulk = kw * K0blk * (fCO2sea - fCO2air) * mC
+    CO2flux_bulk = kw * K0blk * (pCO2sea - pCO2air) * mC
 
     kw_name = kw_func.__name__[2:]
     meta = dict(
