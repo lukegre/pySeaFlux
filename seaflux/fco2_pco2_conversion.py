@@ -161,8 +161,8 @@ def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
 
     Parameters
     ----------
-    press_hPa : np.array
-        uncorrected pressure in hPa
+    press_atm : np.array
+        uncorrected pressure in atm
     temp_K : np.array
         temperature in degrees Kelvin
     xCO2_mol : np.array
