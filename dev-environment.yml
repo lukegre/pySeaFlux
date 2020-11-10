@@ -16,5 +16,6 @@ dependencies:
     - pre-commit
     - mkdocs
     - pooch
+    - PyCO2SYS
 
 
