@@ -6,6 +6,8 @@ SeaFlux
         :target: https://pypi.org/project/seaflux
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
         :target: https://www.gnu.org/licenses/gpl-3.0
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4045403.svg
+        :target: https://doi.org/10.5281/zenodo.4045403
 
 
 Planning to publish alongside Fay, Gregor, McKinley ... (2020). DOI will be released when code has been checked/tested by various contributors. Contributors will be part of the SeaFlux package citation. Please contact me if you would like to use the package before this. 
