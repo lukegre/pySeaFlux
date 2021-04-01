@@ -1,0 +1,18 @@
+name: test_env_seaflux
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  ############## These will have to be adjusted to your specific project
+  - numpy
+  - scipy
+  - pandas
+  - xarray
+  - netcdf4
+  - pytest
+  - pip:
+    - codecov
+    - pytest-cov
+    - coverage[toml]
+    - pooch
+    - PyCO2SYS

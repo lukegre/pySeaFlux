@@ -3,7 +3,11 @@
 # Weiss (1974) CO2 solubility cannot be directly tested because PyCO2SYS evaluates this
 # in /kg units while SeaFlux uses /l units.
 
-import seaflux as sf, PyCO2SYS as pyco2, numpy as np
+import numpy as np
+import PyCO2SYS as pyco2
+
+import seaflux as sf
+
 
 # Seed random number generator for reproducibility
 rng = np.random.default_rng(7)
