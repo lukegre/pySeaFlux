@@ -21,11 +21,11 @@ import sys
 from pkg_resources import get_distribution
 
 
-print("python exec:", sys.executable)
-print("sys.path:", sys.path)
 root = pathlib.Path(__file__).parent.parent.absolute()
 os.environ["PYTHONPATH"] = str(root)
 sys.path.insert(0, str(root))
+print("python exec:", sys.executable)
+print("sys.path:", sys.path)
 
 import seaflux  # isort:skip
 
