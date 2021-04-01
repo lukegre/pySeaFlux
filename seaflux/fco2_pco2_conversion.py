@@ -1,15 +1,20 @@
+"""
+Perform conversions from fco2 to pco2
+"""
+
+
 def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
     """
     Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
     equation would simply be:
-        pCO2sw = fCO2sw / virial_exp
+    ``pCO2sw = fCO2sw / virial_exp``
     where the virial expansion is calculated without xCO2
 
     We get a simple approximate for equilibrator xCO2 with:
-        xCO2eq = fCO2sw * deltaTemp(sw - eq) / press_eq
+    ``xCO2eq = fCO2sw * deltaTemp(sw - eq) / press_eq``
 
     pCO2sw is then calculated with:
-        pCO2sw = fCO2sw / virial_exp(xCO2eq)
+    ``pCO2sw = fCO2sw / virial_exp(xCO2eq)``
 
     Parameters
     ----------
@@ -83,7 +88,7 @@ def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     """
     Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
     equation would simply be:
-        fCO2sw = pCO2sw / virial_exp
+        ``fCO2sw = pCO2sw / virial_exp``
     where the virial expansion is calculated without xCO2
 
     We get a simple approximate for equilibrator xCO2 with:

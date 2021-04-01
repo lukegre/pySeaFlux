@@ -21,11 +21,11 @@ import sys
 from pkg_resources import get_distribution
 
 
-print("python exec:", sys.executable)
-print("sys.path:", sys.path)
 root = pathlib.Path(__file__).parent.parent.absolute()
 os.environ["PYTHONPATH"] = str(root)
 sys.path.insert(0, str(root))
+print("python exec:", sys.executable)
+print("root:       ", root)
 
 import seaflux  # isort:skip
 
@@ -35,7 +35,7 @@ project = "seaflux"
 copyright = "2021, Luke Gregor"
 author = "Luke Gregor"
 
-release = get_distribution("seaflux").version
+release = ""  # get_distribution("seaflux").version
 # for example take major/minor
 version = ".".join(release.split(".")[:2])
 
@@ -75,7 +75,7 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints", "Thumbs.db", ".DS_Store"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "pangeo"
+html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
