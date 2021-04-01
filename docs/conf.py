@@ -35,7 +35,7 @@ project = "seaflux"
 copyright = "2021, Luke Gregor"
 author = "Luke Gregor"
 
-release = ""  # get_distribution("seaflux").version
+release = get_distribution("seaflux").version
 # for example take major/minor
 version = ".".join(release.split(".")[:2])
 
