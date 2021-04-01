@@ -1,14 +1,11 @@
 conda:
    file: docs/environment.yml
 
-build:
-   image: latest
-
 python:
    version: 3.8
    install:
       - method: setuptools
-        path: seaflux
+        path: .
 
 submodules:
    include: all
