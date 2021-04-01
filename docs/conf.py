@@ -24,6 +24,7 @@ from pkg_resources import get_distribution
 root = pathlib.Path(__file__).parent.parent.absolute()
 os.environ["PYTHONPATH"] = str(root)
 sys.path.insert(0, "../..")
+sys.path.insert(1, "..")
 print("python exec:", sys.executable)
 print("sys.path:", sys.path)
 
