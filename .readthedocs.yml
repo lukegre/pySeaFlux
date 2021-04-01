@@ -1,9 +1,17 @@
 conda:
-    file: docs/environment.yml
+   file: docs/environment.yml
+
+build:
+   image: latest
+
 python:
    version: 3.8
    install:
-      - method: setuptools
-        path: package
+      - method: pip
+        path: .
+
+submodules:
+   include: all
+
 sphinx:
   fail_on_warning: true
