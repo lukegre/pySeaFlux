@@ -7,8 +7,8 @@ build:
 python:
    version: 3.8
    install:
-      - method: pip
-        path: .
+      - method: setuptools
+        path: seaflux
 
 submodules:
    include: all
