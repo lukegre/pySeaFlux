@@ -6,10 +6,12 @@ dependencies:
   ############## These will have to be adjusted to your specific project
   - numpy
   - scipy
+  - pandas
   - xarray
-  ##############
+  - netcdf4
   - pytest
   - pip:
     - codecov
     - pytest-cov
     - coverage[toml]
+    - pooch
