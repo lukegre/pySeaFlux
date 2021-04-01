@@ -81,3 +81,4 @@ target/
 .DS_Store
 junit.xml
 **/.ipynb_checkpoints/**
+.mypy_cache
