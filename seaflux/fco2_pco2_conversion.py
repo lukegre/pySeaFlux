@@ -1,5 +1,5 @@
 """
-Conversions of fCO2 : pCO2
+Conversions of fCO2 - pCO2
 --------------------------
 """
 
