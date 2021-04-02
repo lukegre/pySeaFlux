@@ -1,35 +1,33 @@
+"""
+CO2 solubility in seawater
+--------------------------
+"""
+
 from . import check_units as check
 from . import vapour_pressure as vapress
-from .utils import preserve_xda
 
 
-@preserve_xda
 def solubility_weiss1974(salt, temp_K, press_atm=1):
-    """
-    Calculates the solubility of CO2 in sea water for the calculation of
-    air-sea CO2 fluxes. We use the formulation by Weiss (1974) summarised in
-    Wanninkhof (2014).
+    """Calculates the solubility of CO2 in sea water
 
-    Parameters
-    ----------
-    salt : np.array
-        salinity in PSU
-    temp_K : np.array
-        temperature in deg Kelvin
-    press_atm : np.array
-        pressure in atmospheres. Used in the solubility correction for water
-        vapour pressure. If not given, assumed that press_atm is 1atm
+    Used in the calculation of air-sea CO2 fluxes. We use the formulation by
+    Weiss (1974) summarised in Wanninkhof (2014).
 
-    Returns
-    -------
-    K0 : np.array
-        solubility of CO2 in seawater in mol/L/atm
+    Args:
+        salt (array): salinity in PSU
+        temp_K (array): temperature in deg Kelvin
+        press_atm (array): pressure in atmospheres. Used in the solubility
+            correction for water vapour pressure. If not given, assumed
+            that press_atm is 1atm
 
-    Examples
-    --------
-    from Weiss (1974) Table 2 but with pH2O correction
-    >>> solubility_weiss1974(35, 299.15)
-    0.029285284543519093
+    Returns:
+        array: solubility of CO2 in seawater (:math:`K_0`) in mol/L/atm
+
+    Examples:
+        from Weiss (1974) Table 2 but with pH2O correction
+
+        >>> solubility_weiss1974(35, 299.15)
+        0.029285284543519093
     """
 
     from numpy import exp, log
@@ -53,34 +51,10 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
 
     pH2O = vapress.weiss1980(S, T)
     K0 = K0 / (P - pH2O)
-    meta = {
-        "description": "CO2 solubility in seawater using the formulation of Weiss 1974",
-        "units": "mol/L/atm",
-        "long_name": "CO2 solubility in seawater",
-    }
+    # meta = {
+    #     "description": "CO2 solubility in seawater using the formulation of Weiss 1974",
+    #     "units": "mol/L/atm",
+    #     "long_name": "CO2 solubility in seawater",
+    # }
 
-    return K0, meta  # units mol/L/atm
-
-
-def solubility_woolf2016(salt, temp_K, deltaT, press_atm=1):
-    """
-    A wrapper around solubility calculated using the Weiss (1974) approach.
-    From FluxEngine (Shutler et al, 2016; and Holding et al, 2019).
-
-    Parameters
-    ----------
-    temp_K : np.array
-        temperature of sea water at the desired level (e.g. skin)
-    salt : np.array
-        salinity of seawater
-    deltaT : np.array
-        SST differences (foundation - skin)
-
-    Returns
-    -------
-    K0 : np.array
-        solubility of CO2 in seawater in mol/L/atm
-    """
-    K0 = solubility_weiss1974(salt, temp_K, press_atm)
-
-    return K0 * (1 - 0.015 * deltaT)
+    return K0  # units mol/L/atm

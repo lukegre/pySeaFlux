@@ -1,27 +1,28 @@
+"""
+Atmospheric pCO2
+----------------
+Fetches and calculates atmospheric pCO2 using high level interfaces
+"""
+
+
 def atm_xCO2_to_pCO2(xCO2_ppm, slp_hPa, tempSW_C, salt):
     """
     Convert atmospheric xCO2 to pCO2 with correction for water vapour pressure
         pCO2atm = xCO2atm * (Press - pH2O)
 
-    Parameters
-    ----------
-    xCO2_ppm : array
-        atmospheric, or marine boundary layer mole fraction of CO2.
-    tempSW_C : array
-        sea water temperature in degrees C
-    pres_hPa : array
-        atmospheric pressure in hecto Pascal
-    salt : array
-        sea surface salinity in PSU
+    Args:
+        xCO2_ppm (array): atmospheric, or marine boundary layer mole fraction of CO2.
+        slp_hPa (array): sea water temperature in degrees C
+        tempSW_C (array): atmospheric pressure in hecto Pascal
+        salt (array): sea surface salinity in PSU
 
-    Returns
-    -------
-    pCO2atm: np.ndaarray
-        note that ouptut will be an np.ndarray regardless of input
+    Returns:
+        array: note that output will be an np.ndarray regardless of input
     """
+    from numpy import array
+
     from . import check_units as check
     from . import vapour_pressure as vapress
-    from numpy import array
 
     xCO2 = array(xCO2_ppm)
     # check units and mask where outsider of range
@@ -62,14 +63,16 @@ def noaa_mbl_to_dataset(
         options are linear|nearest. MPI-SOMFFN uses nearest, I prefer
         linear
     """
-    from pandas import Timestamp
-    import xarray as xr
     import numpy as np
+    import xarray as xr
+
+    from pandas import Timestamp
 
     def download_and_read_noaa_mbl(noaa_mbl_url):
         import re
-        import pooch
+
         import pandas as pd
+        import pooch
 
         # save to temporary location with pooch
         fname = pooch.retrieve(noaa_mbl_url, None)
@@ -176,10 +179,12 @@ def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt, resample_freq=None
         as the input xarrays
 
     """
-    from .core import atm_xCO2_to_pCO2
+    from warnings import warn
+
     from pandas import Timestamp, infer_freq
     from xarray import DataArray
-    from warnings import warn
+
+    from .core import atm_xCO2_to_pCO2
 
     def all_same(items):
         items = list(items)

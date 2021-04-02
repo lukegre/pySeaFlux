@@ -1,5 +1,19 @@
+"""
+Helper functions
+----------------
+"""
+
+
 def earth_radius(lat):
-    from numpy import deg2rad, sin, cos
+    """Calculate the radius of the earth for a given latitude
+
+    Args:
+        lat (array, float): latitude value (-90 : 90)
+
+    Returns:
+        array: radius in metres
+    """
+    from numpy import cos, deg2rad, sin
 
     lat = deg2rad(lat)
     a = 6378137
@@ -13,13 +27,20 @@ def earth_radius(lat):
 
 
 def area_grid(lat, lon, return_dataarray=False):
-    """Calculate the area of each grid cell for a user-provided
-    grid cell resolution. Area is in square meters, but resolution
-    is given in decimal degrees.
-    Based on the function in
-    https://github.com/chadagreene/CDT/blob/master/cdt/cdtarea.m
+    """Calculate the area of each grid cell for given lats and lons
+
+    Args:
+        lat (array): latitudes in decimal degrees of length N
+        lon (array): longitudes in decimal degrees of length M
+        return_dataarray (bool, optional): if True returns xr.DataArray, else array
+
+    Returns:
+        array, xr.DataArray: area of each grid cell in meters
+
+    References:
+        https://github.com/chadagreene/CDT/blob/master/cdt/cdtarea.m
     """
-    from numpy import meshgrid, deg2rad, gradient, cos
+    from numpy import cos, deg2rad, gradient, meshgrid
 
     ylat, xlon = meshgrid(lat, lon)
     R = earth_radius(ylat)
@@ -48,50 +69,3 @@ def area_grid(lat, lon, return_dataarray=False):
             },
         )
         return xda
-
-
-def preserve_xda(func):
-    """
-    Function wrapper that will return output to xr.DataArray
-    if any of the inputs are DataArrays.
-
-    The coordinates from the first input term that is a DataArray will be
-    used to define the output DataArray
-
-    If the output is a tuple and the second output is a dictionary, this
-    output will be used to create the attributes of the DataArray.
-    """
-    from functools import wraps
-    import xarray as xr
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        xda = None
-        for a in args:
-            if isinstance(a, xr.DataArray):
-                xda = a
-                break
-
-        out = func(*args, **kwargs)
-
-        istuple = isinstance(out, tuple)
-        if istuple:
-            second_isdict = isinstance(out[1], dict)
-        else:
-            return out
-
-        if (xda is None) & second_isdict:
-            return out[0]
-
-        attrs = xda.attrs
-        if second_isdict:
-            data = out[0]
-            attrs.update(out[1])
-        else:
-            data = out
-            attrs = xda.attrs
-
-        out = xr.DataArray(data=data, dims=xda.dims, coords=xda.coords, attrs=attrs)
-        return out
-
-    return wrapper

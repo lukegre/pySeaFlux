@@ -1,28 +1,36 @@
+"""
+Water vapour pressure
+---------------------
+"""
+
 from . import check_units as check
 
 
 def weiss1980(salt, temp_K):
-    """
-    Calculates the water vapour pressure of seawater at a given salinity and
-    temerature using the methods defined in Weiss (1974)
+    """Water vapour pressure of seawater after Weiss and Price (1980)
 
-    Parameters
-    ----------
-    salt : np.array
-        salinity
-    temp_K : np.array
-        temperature in deg Kelvin
+    For a given salinity and temperature using the methods
+    defined in Weiss (1974)
 
-    Returns
-    -------
-    sea_vapress : np.array
-        sea water vapour pressure in atm
+    Args:
+        salt (array): salinity in PSU
+        temp_K (array): temperature in deg Kelvin
 
-    Examples
-    --------
-    >>> vapress_weiss1980(35, 25+273.15)  # tempC + 273.15
-    0.03065529996317971
+    Returns:
+        array: sea water vapour pressure in atm (:math:`pH_2O`)
 
+    Examples:
+        >>> vapress_weiss1980(35, 25+273.15)  # tempC + 273.15
+        0.03065529996317971
+
+    References:
+        Weiss, R. (1974). Carbon dioxide in water and seawater: the solubility
+        of a non-ideal gas. Marine Chemistry, 2(3), 203–215.
+        https://doi.org/10.1016/0304-4203(74)90015-2
+
+        Weiss, R., & Price, B. a. (1980). Nitrous oxide solubility in water
+        and seawater. Marine Chemistry, 8(4), 347–359.
+        https://doi.org/10.1016/0304-4203(80)90024-9
     """
     from numpy import exp, log
 
@@ -36,9 +44,10 @@ def weiss1980(salt, temp_K):
 
 
 def dickson2007(salt, temp_K):
-    """
-    Calculates the water vapour pressure of seawater at a given salinity and
-    temerature using the methods defined in Dickson et al. (2007; CO2 manual)
+    """Water vapour pressure of seawater after Dickson et al. (2007)
+
+    Calculates :math:`pH_2O` at a given salinity and temperature using the
+    methods defined in Dickson et al. (2007; CO2 manual)
 
     Parameters
     ----------
@@ -92,7 +101,7 @@ def dickson2007(salt, temp_K):
     ###################################################
     # WATER VAPOUR PRESSURE FOR SEA WATER
     ###################################################
-    # osmotic coeffcients at 25C - Millero 1974
+    # osmotic coefficients at 25C - Millero 1974
     c0 = +0.90799
     c1 = -0.08992
     c2 = +0.18458

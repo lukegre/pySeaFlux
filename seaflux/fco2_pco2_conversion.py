@@ -1,57 +1,51 @@
 """
-Perform conversions from fco2 to pco2
+Conversions of :math:`fCO_2` : :math:`pCO_2`
+--------------------------------------------
 """
 
 
 def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
+    """Convert fCO2 to pCO2 in sea water.
+
+    If equilibrator temperature is provided, we get a simple approximate for
+    equilibrator  :math:`xCO_2` that allows for the virial expansion to be
+    calculated more accurately. If not, then a simple approximation is good
+    enough. See the examples for the differences.
+
+    .. math::
+        pCO_2^{sw} = fCO_2^{sw} \\div virial(xCO_2^{eq})
+
+    where :math:`xCO_2^{eq} = fCO_2^{sw} \\times \\Delta T^{(sw - eq)} \\div P^{eq}`
+
+
+    Args:
+        fCO2SW_uatm (array): seawater fugacity of CO2 in micro atmospheres
+        tempSW_C (array): sea water temperature in degrees C
+        pres_hPa (array, optional): equilibrator pressure in hecto Pascals. Defaults to 1013.25.
+        tempEQ_C (array, optional): equilibrator temperature in degrees C. Defaults to None.
+
+    Returns:
+        array:
+            partial pressure of CO2 in seawater
+
+    Note:
+        In FluxEngine, they account fully solve for the original xCO2 that is used
+        in the calculation of the virial expansion. I use the first estimate of
+        xCO2 (based on fCO2 rather than pCO2). The difference between the two
+        approaches is so small that it is not significant to be concerned. Their
+        correction is more precise, but the difference between their iterative
+        correction and our approximation is on the order of 1e-14 atm (1e-8 uatm).
+
+    Examples:
+        >>> fCO2_to_pCO2(380, 8)
+        381.50806485658234
+        >>> fCO2_to_pCO2(380, 8, pres_hPa=985)
+        381.4659553134281
+        >>> fCO2_to_pCO2(380, 8, pres_hPa=985, tempEQ_C=14)
+        381.466027968504
     """
-    Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
-    equation would simply be:
-    ``pCO2sw = fCO2sw / virial_exp``
-    where the virial expansion is calculated without xCO2
-
-    We get a simple approximate for equilibrator xCO2 with:
-    ``xCO2eq = fCO2sw * deltaTemp(sw - eq) / press_eq``
-
-    pCO2sw is then calculated with:
-    ``pCO2sw = fCO2sw / virial_exp(xCO2eq)``
-
-    Parameters
-    ----------
-    fCO2SW_uatm : array
-        seawater fugacity of CO2 in micro atmospheres
-    tempSW_C : array
-        sea water temperature in degrees C
-    pres_hPa : array
-        equilibrator pressure in hecto Pascals
-    tempEQ_C : array
-        equilibrator temperature in degrees C
-
-    Returns
-    -------
-    pCO2SW_uatm : array
-        partial pressure of CO2 in seawater
-
-    Note
-    ----
-    In FluxEngine, they account fully solve for the original xCO2 that is used
-    in the calculation of the virial exponent. I use the first estimate of
-    xCO2 (based on fCO2 rather than pCO2). The difference between the two
-    approaches is so small that it is not significant to be concerned. Their
-    correction is more precise, but the difference between their iterative
-    correction and our approximation is on the order of 1e-14 atm (1e-8 uatm).
-
-    Examples
-    --------
-    >>> fCO2_to_pCO2(380, 8)
-    381.50806485658234
-    >>> fCO2_to_pCO2(380, 8, pres_hPa=985)
-    381.4659553134281
-    >>> fCO2_to_pCO2(380, 8, pres_hPa=985, tempEQ_C=14)
-    381.466027968504
-    """
-    from . import check_units as check
     from . import auxiliary_equations as eqs
+    from . import check_units as check
 
     # if equilibrator inputs are None, tempEQ=tempSW
     if tempEQ_C is None:
@@ -73,7 +67,7 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
     else:
         dT = eqs.temperature_correction(Tsw, Teq)
 
-    # a best estimate of xCO2 - this is an aproximation
+    # a best estimate of xCO2 - this is an approximation
     # one would have to use pCO2 / Peq to get real xCO2
     # Not getting the exact equilibrator xCO2
     xCO2eq = fCO2sw * dT / Peq
@@ -85,52 +79,44 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
 
 
 def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
+
+    """Convert pCO2 to fCO2 in sea water to account for non-ideal behaviour of CO2
+
+    If equilibrator temperature is provided, we get a simple approximate for
+    equilibrator  :math:`xCO_2` that allows for the virial expansion to be
+    calculated more accurately. If not, then a simple approximation is probably
+    good enough. See the examples for the differences.
+
+    .. math::
+        pCO_2^{sw} = fCO_2^{sw} \\times virial(xCO_2^{eq})
+
+    where :math:`xCO_2^{eq} = fCO_2^{sw} \\times \\Delta T^{(sw - eq)} \\div P^{eq}`
+
+    Args:
+        fCO2SW_uatm (array): seawater fugacity of CO2 in micro atmospheres
+        tempSW_C (array): sea water temperature in degrees C
+        pres_hPa (array, optional): equilibrator pressure in hecto Pascals. Defaults to 1013.25.
+        tempEQ_C (array, optional): equilibrator temperature in degrees C. Defaults to None.
+
+    Returns:
+        array: fugacity of CO2 in seawater
+
+    Note:
+        In FluxEngine, they account for the change in xCO2. This error is so small
+        that it is not significant to be concerned about it. Their correction is
+        more precise, but the difference between their iterative correction and our
+        approximation is less than 1e-14 atm (or 1e-8 uatm).
+
+    Examples:
+        >>> pCO2_to_fCO2(380, 8)
+        378.49789637942064
+        >>> pCO2_to_fCO2(380, 8, pres_hPa=985)
+        378.53967828231225
+        >>> pCO2_to_fCO2(380, 8, pres_hPa=985, tempEQ_C=14)
+        378.53960618459695
     """
-    Convert fCO2 to pCO2 for SOCAT in sea water. A simple version of the
-    equation would simply be:
-        ``fCO2sw = pCO2sw / virial_exp``
-    where the virial expansion is calculated without xCO2
-
-    We get a simple approximate for equilibrator xCO2 with:
-        xCO2eq = pCO2sw * deltaTemp(sw - eq) / press_eq
-
-    fCO2sw is then calculated with:
-        fCO2sw = pCO2sw * virial_exp(xCO2eq)
-
-    Parameters
-    ----------
-    pCO2SW_uatm : array
-        seawater fugacity of CO2 in micro atmospheres
-    tempSW_C : array
-        sea water temperature in degrees C/K
-    tempEQ_C : array
-        equilibrator temperature in degrees C/K
-    pres_hPa : array
-        pressure in kilo Pascals
-
-    Returns
-    -------
-    fCO2SW_uatm : array
-        partial pressure of CO2 in seawater
-
-    Note
-    ----
-    In FluxEngine, they account for the change in xCO2. This error is so small
-    that it is not significant to be concerned about it. Their correction is
-    more precise, but the difference between their iterative correction and our
-    approximation is less than 1e-14 atm (or 1e-8 uatm).
-
-    Examples
-    --------
-    >>> pCO2_to_fCO2(380, 8)
-    378.49789637942064
-    >>> pCO2_to_fCO2(380, 8, pres_hPa=985)
-    378.53967828231225
-    >>> pCO2_to_fCO2(380, 8, pres_hPa=985, tempEQ_C=14)
-    378.53960618459695
-    """
-    from . import check_units as check
     from . import auxiliary_equations as eqs
+    from . import check_units as check
 
     # if equilibrator inputs are None then make defaults Patm=1, tempEQ=tempSW
     if tempEQ_C is None:
@@ -146,7 +132,7 @@ def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
 
     # calculate the CO2 diff due to equilibrator and seawater temperatures
     dT = eqs.temperature_correction(Tsw, Teq)
-    # a best estimate of xCO2 - this is an aproximation
+    # a best estimate of xCO2 - this is an approximation
     # one would have to use pCO2 / Peq to get real xCO2
     xCO2eq = pCO2sw * dT / Peq
 
@@ -159,40 +145,39 @@ def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
 def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
     """
     Calculate the ideal gas correction factor for converting pCO2 to fCO2.
-    fCO2 = pCO2 * virial_expansion
-    pCO2 = fCO2 / virial_expansion
 
     Based on the Lewis and Wallace 1998 Correction.
 
-    Parameters
-    ----------
-    press_atm : np.array
-        uncorrected pressure in atm
-    temp_K : np.array
-        temperature in degrees Kelvin
-    xCO2_mol : np.array
-        mole fraction of CO2. Can be pCO2/fCO2 if xCO2 is not defined or can
-        leave this as undefined as makes only a small impact on output
+    Args:
+        temp_K (array): temperature in degrees Kelvin
+        pres_atm (array): atmospheric pressure in atmospheres
+        xCO2_mol (array, optional): mole fraction of CO2, can
+            also be p/fCO2 if xCO2 not available. Can also be None
+            which makes a small difference. See examples.
 
-    Return
-    ------
-    virial_expression : np.array
-        the factor to multiply with pCO2. Unitless
+    Returns:
+        array: the factor to multiply/divide with pCO2/fCO2. Unitless
 
-    Examples
-    --------
-    The example below is from Dickson et al. (2007)
-    >>> 350 * virial_coeff(298.15, 1)  # CO2 [uatm] * correction factor
-    348.8836492182758
+        .. math::
+            fCO_2 = pCO_2 \\times \\text{virial expansion}
 
-    References
-    ----------
-    Weiss, R. (1974). Carbon dioxide in water and seawater: the solubility of a
+            pCO_2 = fCO_2 \\div \\text{virial expansion}
+
+    Examples:
+        From Dickson et al. (2007)
+
+        >>> 350 * virial_coeff(298.15, 1)  # CO2 [uatm] * correction factor
+        348.8836492182758
+
+    References:
+        Weiss, R. (1974). Carbon dioxide in water and seawater: the solubility of a
         non-ideal gas. Marine Chemistry, 2(3), 203–215.
         https://doi.org/10.1016/0304-4203(74)90015-2
+
     Compared with the Seacarb package in R
     """
     from numpy import array, exp
+
     from . import check_units as check
 
     T = check.temp_K(temp_K)

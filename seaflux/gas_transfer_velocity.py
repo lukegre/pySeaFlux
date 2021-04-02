@@ -1,8 +1,13 @@
+"""
+Gas Transfer Velocity
+---------------------
+
+Modulates the magnitude of the flux between the atmosphere and the ocean.
+"""
+
 from . import check_units as check
-from .utils import preserve_xda
 
 
-@preserve_xda
 def kw_scaled(wind_speed, wind_grid_stdev, temp_C, ice_frac, scaling=16):
     """
     Calculates kw using the wind^2 formulation for different wind products and
@@ -43,10 +48,10 @@ def kw_scaled(wind_speed, wind_grid_stdev, temp_C, ice_frac, scaling=16):
         for creating netCDF files
 
     """
-    from numpy import array, nansum, nan_to_num, isnan, around
+    from numpy import around, array, isnan, nan_to_num, nansum
 
     def calculate_scaled_alpha(U2, Sc, ice, scaling):
-
+        """scales alpha"""
         mask = isnan(U2) | isnan(Sc)
 
         weight = nan_to_num(1 - ice)
@@ -98,21 +103,21 @@ def schmidt_number(temp_C):
     Calculates the Schmidt number as defined by Jahne et al. (1987) and listed
     in Wanninkhof (2014) Table 1.
 
-    Parameters
-    ----------
-    temp_C : np.array
-        temperature in degrees C
+    Args:
+        temp_C (array): temperature in degrees C
 
-    Returns
-    -------
-    Sc : np.array
-        Schmidt number (dimensionless)
+    Returns:
+        array: Schmidt number (dimensionless)
 
-    Examples
-    --------
-    >>> schmidt_number(20)  # from Wanninkhof (2014)
-    668.344
+    Examples:
+        >>> schmidt_number(20)  # from Wanninkhof (2014)
+        668.344
 
+    References:
+        Jähne, B., Heinz, G., & Dietrich, W. (1987). Measurement of the
+        diffusion coefficients of sparingly soluble gases in water. Journal
+        of Geophysical Research: Oceans, 92(C10), 10767–10776.
+        https://doi.org/10.1029/JC092iC10p10767
     """
 
     check.temp_K(temp_C + 273.15)
@@ -134,17 +139,17 @@ def k_Li86(wind_ms, temp_C):
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Liss and Merlivat (1986)
 
-    Parameters
-    ----------
-    wind_ms : np.array
-        wind speed in m/s
-    temp_C : np.array
-        temperature in degrees C
+    Args:
+        wind_ms (array): wind speed in m/s
+        temp_C (array): temperature in degrees C
 
-    Returns
-    -------
-    kw : array
-        gas transfer velocity (k600) in cm/hr
+    Returns:
+        kw (array): gas transfer velocity (k600) in cm/hr
+
+    References:
+        Liss, P. S., & Merlivat, L. (1986). The Role of Air-Sea Exchange
+        in Geochemical Cycling (Vol. 1983, Issue June 1983).
+        D. Reidel Publishing Company.
     """
     from numpy import array, zeros_like
 
@@ -172,19 +177,21 @@ def k_Wa92(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Wanninkhof (1992)
-        k660 = 0.39 * u^2
 
-    Parameters
-    ----------
-    wind_ms : np.array
-        wind speed in m/s
-    temp_C : np.array
-        temperature in degrees C
+    .. math::
+        k_{660} = 0.39 \\cdot U^2
 
-    Returns
-    -------
-    kw : array
-        gas transfer velocity (k660) in cm/hr
+    Args:
+        wind_ms (array): wind speed in m/s
+        temp_C (array): temperature in degrees C
+
+    Returns:
+        kw (array): gas transfer velocity (k660) in cm/hr
+
+    References:
+        Wanninkhof, R. H. (1992). Relationship between wind speed and gas
+        exchange over the ocean. Journal of Geophysical Research, 97(C5),
+        7373. https://doi.org/10.1029/92JC00188
     """
     from numpy import array
 
@@ -204,19 +211,21 @@ def k_Wa99(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Wanninkhof (1999)
-        k600 = 0.0283 * U^3
 
-    Parameters
-    ----------
-    wind_ms : np.array
-        wind speed in m/s
-    temp_C : np.array
-        temperature in degrees C
+    .. math::
+        k_{600} = 0.0283 \\cdot U^3
 
-    Returns
-    -------
-    kw : array
-        gas transfer velocity (k600) in cm/hr
+    Args:
+        wind_ms (array): wind speed in m/s
+        temp_C (array): temperature in degrees C
+
+    Returns:
+        kw (array): gas transfer velocity (k600) in cm/hr
+
+    References:
+        Wanninkhof, R. H., & McGillis, W. R. (1999). A cubic relationship
+        between air-sea CO2 exchange and wind speed. Geophysical Research
+        Letters, 26(13), 1889–1892. https://doi.org/10.1029/1999GL900363
     """
     from numpy import array
 
@@ -236,19 +245,23 @@ def k_Ni00(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Nightingale et al (2000)
-        k600 = (0.333 * U) + (0.222 * U^2)
 
-    Parameters
-    ----------
-    wind_ms : np.array
-        wind speed in m/s
-    temp_C : np.array
-        temperature in degrees C
+    .. math::
+        k_{600} = 0.333 \\cdot U + 0.222 \\cdot U^2
 
-    Returns
-    -------
-    kw : array
-        gas transfer velocity (k600) in cm/hr
+    Args:
+        wind_ms (array): wind speed in m/s
+        temp_C (array): temperature in degrees C
+
+    Returns:
+        kw (array): gas transfer velocity (k600) in cm/hr
+
+    References:
+        Nightingale, P. D., Malin, G., Law, C. S., Watson, A. J., Liss, P. S.,
+        Liddicoat, M. I., Boutin, J., & Upstill-Goddard, R. C. (2000). In
+        situ evaluation of air-sea gas exchange parameterizations using
+        novel conservative and volatile tracers. In Global Biogeochemical
+        Cycles (Vol. 14, Issue 1, p. 373). https://doi.org/10.1029/1999GB900091
     """
     from numpy import array
 
@@ -268,19 +281,21 @@ def k_Mc01(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of McGillis et al. (2001)
-        k660 = 3.3 + (0.026 * U^3)
 
-    Parameters
-    ----------
-    wind_ms : np.array
-        wind speed in m/s
-    temp_C : np.array
-        temperature in degrees C
+    .. math::
+        k_{660} = 3.3 + 0.026 \\cdot U^3
 
-    Returns
-    -------
-    kw : array
-        gas transfer velocity (k660) in cm/hr
+    Args:
+        wind_ms (array): wind speed in m/s
+        temp_C (array): temperature in degrees C
+
+    Returns:
+        kw (array): gas transfer velocity (k660) in cm/hr
+
+    References:
+        Wanninkhof, R. H., & McGillis, W. R. (1999). A cubic relationship
+        between air-sea CO2 exchange and wind speed. Geophysical Research
+        Letters, 26(13), 1889–1892. https://doi.org/10.1029/1999GL900363
     """
     from numpy import array
 
@@ -299,20 +314,23 @@ def k_Mc01(wind_ms, temp_C):
 def k_Ho06(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
-    of Ho et al (2006)
-        k600 = 0.266 * U^2
+    of Ho et al. (2006)
 
-    Parameters
-    ----------
-    wind_ms : np.array
-        wind speed in m/s
-    temp_C : np.array
-        temperature in degrees C
+    .. math::
+        k_{600} = 0.266 \\cdot U^2
 
-    Returns
-    -------
-    kw : array
-        gas transfer velocity (k600) in cm/hr
+    Args:
+        wind_ms (array): wind speed in m/s
+        temp_C (array): temperature in degrees C
+
+    Returns:
+        kw (array): gas transfer velocity (k600) in cm/hr
+
+    References:
+        Ho, D. T., Law, C. S., Smith, M. J., Schlosser, P., Harvey, M., & Hill, P.
+        (2006). Measurements of air-sea gas exchange at high wind speeds in the Southern
+        Ocean: Implications for global parameterizations. Geophysical Research Letters,
+        33(16), 1–6. https://doi.org/10.1029/2006GL026817
     """
     from numpy import array
 
@@ -331,20 +349,23 @@ def k_Ho06(wind_ms, temp_C):
 def k_Sw07(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
-    of Sweeny et al (2007) who scaled Wanninkhof (1992)
-        k660 = 0.27 * u^2
+    Wanninkhof (1992) rescaled by Sweeny et al (2007)
 
-    Parameters
-    ----------
-    wind_ms : np.array
-        wind speed in m/s
-    temp_C : np.array
-        temperature in degrees C
+    .. math::
+        k_{660} = 0.27 \\cdot U^2
 
-    Returns
-    -------
-    kw : array
-        gas transfer velocity (k660) in cm/hr
+    Args:
+        wind_ms (array): wind speed in m/s
+        temp_C (array): temperature in degrees C
+
+    Returns:
+        kw (array): gas transfer velocity (k660) in cm/hr
+
+    References:
+        Sweeney, C., Gloor, E., Jacobson, A. R., Key, R. M., McKinley, G. A.,
+        Sarmiento, J. L., & Wanninkhof, R. H. (2007). Constraining global
+        air-sea gas exchange for CO2 with recent bomb 14C measurements.
+        Global Biogeochemical Cycles, 21(2), n/a--n/a. https://doi.org/10.1029/2006GB002784
     """
     from numpy import array
 
@@ -364,19 +385,22 @@ def k_Wa09(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Wanninkhof et al. (2009)
-        k660 = 3. + (0.1 * U) + (0.064 * U^2) + (0.011 * U^3)
 
-    Parameters
-    ----------
-    wind_ms : np.array
-        wind speed in m/s
-    temp_C : np.array
-        temperature in degrees C
+    .. math::
+        k_{660} = 3.0 + 0.1 \\cdot U + 0.064 \\cdot U^2 + 0.011 \\cdot U^3
 
-    Returns
-    -------
-    kw : array
-        gas transfer velocity (k660) in cm/hr
+    Args:
+        wind_ms (array): wind speed in m/s
+        temp_C (array): temperature in degrees C
+
+    Returns:
+        kw (array): gas transfer velocity (k660) in cm/hr
+
+    References:
+        Wanninkhof, R. H., Asher, W. E., Ho, D. T., Sweeney, C., & McGillis,
+        W. R. (2009). Advances in Quantifying Air-Sea Gas Exchange and
+        Environmental Forcing*. Annual Review of Marine Science, 1(1),
+        213–244. https://doi.org/10.1146/annurev.marine.010908.163742
     """
     from numpy import array
 
@@ -396,19 +420,21 @@ def k_Wa14(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Wanninkhof et al. (2014)
-        k660 = 0.251 * U^2
 
-    Parameters
-    ----------
-    wind_ms : np.array
-        wind speed in m/s
-    temp_C : np.array
-        temperature in degrees C
+    .. math::
+        k_{660} = 0.251 \\cdot U^2
 
-    Returns
-    -------
-    kw : array
-        gas transfer velocity (k660) in cm/hr
+    Args:
+        wind_ms (array): wind speed in m/s
+        temp_C (array): temperature in degrees C
+
+    Returns:
+        kw (array): gas transfer velocity (k660) in cm/hr
+
+    References:
+        Wanninkhof, R. H. (2014). Relationship between wind speed and gas
+        exchange over the ocean revisited. Limnology and Oceanography:
+        Methods, 12(JUN), 351–362. https://doi.org/10.4319/lom.2014.12.351
     """
     from numpy import array
 

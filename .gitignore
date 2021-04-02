@@ -82,3 +82,4 @@ target/
 junit.xml
 **/.ipynb_checkpoints/**
 .mypy_cache
+seaflux/_version.py
