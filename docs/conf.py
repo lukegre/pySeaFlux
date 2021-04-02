@@ -75,7 +75,7 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints", "Thumbs.db", ".DS_Store"]
 html_theme_options = {
     "logo_only": True,
     "display_version": False,
-    "style_nav_header_background": "#2a4b70",
+    "style_nav_header_background": "#1d3550",
 }
 
 # The name for this set of Sphinx documents.  If None, it defaults to
