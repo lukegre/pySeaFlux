@@ -6,13 +6,28 @@
 Welcome to seaflux's documentation!
 =======================================
 
-This is an awesome description of seaflux, written in `reStructuredText`_.
+SeaFlux is a Python 3.6+ package that can be used to calculate air-sea CO2 fluxes for the global ocean. 
+The SeaFlux Python package is a companion package to the SeaFlux dataset that is under review in 
+ESSD discussions (https://doi.org/10.5194/essd-2021-16). 
 
-You can contribute new sections by either adding a new file (see ``new_section.rst``) or just putting a jupyter notebook
-in the ``docs`` folder (see ``new_section_notebook.ipynb``).
+SeaFlux provides high level code to access the datasets presented in the ESSD manuscript. 
+Further, the package provides the code to calculate these data sets. 
 
-In either case, make sure to add an entry in the ``.. toctree::``. Check out ``index.rst`` how it was done for the above examples.
+Installation
+------------
 
+.. code-block:: bash
+    
+   # for latest release
+   pip install seaflux  
+   
+   # for bleeding-edge up-to-date commit
+   pip install -e git+https://github.com/lukegre/SeaFlux.git  
+   
+
+
+Contents
+--------
 .. toctree::
    :maxdepth: 2
 
