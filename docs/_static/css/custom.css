@@ -1,3 +1,7 @@
 .wy-nav-side{
     background: #1d3550;
     }
+
+.wy-menu-vertical header, .wy-menu-vertical p.caption{
+    color: #dfa844
+}
