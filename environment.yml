@@ -10,5 +10,6 @@ dependencies:
   - pandas
   - xarray
   - netcdf4
+  - pip 
   - pip:
     - pooch

@@ -10,6 +10,7 @@ dependencies:
   - xarray
   - netcdf4
   - pytest
+  - pip
   - pip:
     - codecov
     - pytest-cov
