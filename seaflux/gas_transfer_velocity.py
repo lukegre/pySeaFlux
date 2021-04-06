@@ -139,6 +139,12 @@ def k_Li86(wind_ms, temp_C):
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Liss and Merlivat (1986)
 
+    Note:
+        This is an old parameterization and we recommend using updated
+        parameterisations that are calculated based on the wind product you
+        choose to use. We include this parameterisation based purely for
+        legacy purposes.
+
     Args:
         wind_ms (array): wind speed in m/s
         temp_C (array): temperature in degrees C
@@ -173,16 +179,30 @@ def k_Li86(wind_ms, temp_C):
     return k
 
 
-def k_Wa92(wind_ms, temp_C):
+def k_Wa92(wind_second_moment, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Wanninkhof (1992)
 
+    Note:
+        This is an old parameterization and we recommend using updated
+        parameterisations that are calculated based on the wind product you
+        choose to use. We include this parameterisation based purely for
+        legacy purposes.
+
+    The gas transfer velocity is scaled from instantaneous wind speeds.
+    The study applies a correction to the scaling (0.39) based on instantaneous
+    wind speeds to lower it to 0.31. This correction is based on the variability
+    of wind.
+
     .. math::
-        k_{660} = 0.39 \\cdot U^2
+        k_{660} = 0.31 \\cdot U^2
+
 
     Args:
-        wind_ms (array): wind speed in m/s
+        wind_second_moment (array): wind speed squared in m2/s2. Note that the
+        second moment should be calculated at the native resolution of the
+        wind to avoid losses of variability when taking the square product.
         temp_C (array): temperature in degrees C
 
     Returns:
@@ -195,14 +215,13 @@ def k_Wa92(wind_ms, temp_C):
     """
     from numpy import array
 
-    U = array(wind_ms)
+    U2 = array(wind_second_moment)
     T = array(temp_C)
 
     check.temp_K(T + 273.15)
-    check.wind_ms(U)
 
     Sc = schmidt_number(temp_C)
-    k = (0.39 * U ** 2) * (660 / Sc) ** 0.5
+    k = (0.31 * U2) * (660 / Sc) ** 0.5
 
     return k
 
@@ -210,7 +229,11 @@ def k_Wa92(wind_ms, temp_C):
 def k_Wa99(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
-    of Wanninkhof (1999)
+    of Wanninkhof and McGillis (1999)
+
+    The gas transfer velocity has been scaled for in-situ short term wind
+    products. Note that using this function for any other wind product is not
+    correct.
 
     .. math::
         k_{600} = 0.0283 \\cdot U^3
@@ -282,6 +305,10 @@ def k_Mc01(wind_ms, temp_C):
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of McGillis et al. (2001)
 
+    The gas transfer velocity has been scaled for in-situ short term wind
+    products. Note that using this function for any other wind product is not
+    correct.
+
     .. math::
         k_{660} = 3.3 + 0.026 \\cdot U^3
 
@@ -293,9 +320,10 @@ def k_Mc01(wind_ms, temp_C):
         kw (array): gas transfer velocity (k660) in cm/hr
 
     References:
-        Wanninkhof, R. H., & McGillis, W. R. (1999). A cubic relationship
-        between air-sea CO2 exchange and wind speed. Geophysical Research
-        Letters, 26(13), 1889–1892. https://doi.org/10.1029/1999GL900363
+        McGillis, W. R., Edson, J. B., Ware, J. D., Dacey, J. W. H., Hare, J. E.,
+        Fairall, C. W., & Wanninkhof, R. H. (2001). Carbon dioxide flux
+        techniques performed during GasEx-98. Marine Chemistry, 75(4), 267–280.
+        https://doi.org/10.1016/S0304-4203(01)00042-1
     """
     from numpy import array
 
@@ -311,13 +339,20 @@ def k_Mc01(wind_ms, temp_C):
     return k
 
 
-def k_Ho06(wind_ms, temp_C):
+def k_Ho06(wind_second_moment, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Ho et al. (2006)
 
+    The gas transfer velocity is for the QuickSCAT satellite wind product.
+    Note that using this function for any other wind product is stricktly
+    speaking not correct.
+
     .. math::
         k_{600} = 0.266 \\cdot U^2
+
+    The parameterization is based on the SOLAS Air-Sea Gas Exchange (SAGE)
+    experiment.
 
     Args:
         wind_ms (array): wind speed in m/s
@@ -334,28 +369,33 @@ def k_Ho06(wind_ms, temp_C):
     """
     from numpy import array
 
-    U = array(wind_ms)
+    U2 = array(wind_second_moment)
     T = array(temp_C)
 
     check.temp_K(T + 273.15)
-    check.wind_ms(U)
 
     Sc = schmidt_number(temp_C)
-    k = (0.266 * U ** 2) * (600 / Sc) ** 0.5
+    k = (0.266 * U2) * (600 / Sc) ** 0.5
 
     return k
 
 
-def k_Sw07(wind_ms, temp_C):
+def k_Sw07(wind_second_moment, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     Wanninkhof (1992) rescaled by Sweeny et al (2007)
+
+    The gas transfer velocity has been scaled for the NCEP/NCAR reanalysis 1
+    product. Note that using this function for any other wind product is not
+    correct.
 
     .. math::
         k_{660} = 0.27 \\cdot U^2
 
     Args:
-        wind_ms (array): wind speed in m/s
+        wind_second_moment (array): wind speed squared in m2/s2. Note that the
+            second moment should be calculated at the native resolution of the
+            wind to avoid losses of variability when taking the square product.
         temp_C (array): temperature in degrees C
 
     Returns:
@@ -365,18 +405,17 @@ def k_Sw07(wind_ms, temp_C):
         Sweeney, C., Gloor, E., Jacobson, A. R., Key, R. M., McKinley, G. A.,
         Sarmiento, J. L., & Wanninkhof, R. H. (2007). Constraining global
         air-sea gas exchange for CO2 with recent bomb 14C measurements.
-        Global Biogeochemical Cycles, 21(2), n/a--n/a. https://doi.org/10.1029/2006GB002784
+        Global Biogeochemical Cycles, 21(2). https://doi.org/10.1029/2006GB002784
     """
     from numpy import array
 
-    U = array(wind_ms)
+    U2 = array(wind_second_moment)
     T = array(temp_C)
 
     check.temp_K(T + 273.15)
-    check.wind_ms(U)
 
     Sc = schmidt_number(temp_C)
-    k = (0.27 * U ** 2) * (660 / Sc) ** 0.5
+    k = (0.27 * U2) * (660 / Sc) ** 0.5
 
     return k
 
@@ -385,6 +424,10 @@ def k_Wa09(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Wanninkhof et al. (2009)
+
+    The gas transfer velocity has been scaled for the Cross-Calibrated Multi-
+    Platform (CCMP) Winds product. Note that using this function for any other
+    wind product is not correct.
 
     .. math::
         k_{660} = 3.0 + 0.1 \\cdot U + 0.064 \\cdot U^2 + 0.011 \\cdot U^3
@@ -416,16 +459,22 @@ def k_Wa09(wind_ms, temp_C):
     return k
 
 
-def k_Wa14(wind_ms, temp_C):
+def k_Wa14(wind_second_moment, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
     of Wanninkhof et al. (2014)
+
+    The gas transfer velocity has been scaled for the Cross-Calibrated Multi-
+    Platform (CCMP) Winds product. Note that using this function for any other
+    wind product is not correct.
 
     .. math::
         k_{660} = 0.251 \\cdot U^2
 
     Args:
-        wind_ms (array): wind speed in m/s
+        wind_second_moment (array): wind speed squared in m2/s2. Note that the
+            second moment should be calculated at the native resolution of the
+            wind to avoid losses of variability when taking the square product.
         temp_C (array): temperature in degrees C
 
     Returns:
@@ -438,13 +487,12 @@ def k_Wa14(wind_ms, temp_C):
     """
     from numpy import array
 
-    U = array(wind_ms)
+    U2 = array(wind_second_moment)
     T = array(temp_C)
 
     check.temp_K(T + 273.15)
-    check.wind_ms(U)
 
     Sc = schmidt_number(temp_C)
-    k = 0.251 * U ** 2 * (660 / Sc) ** 0.5
+    k = 0.251 * U2 * (660 / Sc) ** 0.5
 
     return k

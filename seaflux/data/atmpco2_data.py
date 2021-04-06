@@ -1,7 +1,13 @@
 """
 Atmospheric pCO2
 ----------------
-Fetches and calculates atmospheric pCO2 using high level interfaces
+Fetches and calculates atmospheric pCO2 using high level interfaces.
+
+Contains functions for the full process:
+1. Download the NOAA marine boundary layer product
+2. Interpolate the product onto a standard grid
+3. Download MSLP (ERA5), SST (AVHRR), salinity (EN4) for ATM calculations
+4. Convert atmospheric xCO2 to pCO2 with the data
 """
 
 
@@ -69,6 +75,7 @@ def noaa_mbl_to_dataset(
     from pandas import Timestamp
 
     def download_and_read_noaa_mbl(noaa_mbl_url):
+        """basic download function that uses pooch"""
         import re
 
         import pandas as pd
@@ -250,3 +257,60 @@ def noaa_mbl_to_pCO2(noaa_mbl_url, press_hPa, tempSW_C, salt, resample_freq=None
     )
 
     return pCO2atm
+
+
+def era5_slp(
+    year=list(range(1982, 2021)),
+    month=None,
+    dest="~/Downloads/ERA5_mslp_monthly",
+    cds_var_names=[
+        "surface_pressure",
+    ],
+    **kwargs,
+):
+    """
+    Shortcut for fetching era5 data. requires the `cdsapi` to be
+    correctly set up (~/.cdsapi)
+    Uses data from `reanalysis-era5-single-levels`
+    Fetches data as monthly files to keep requests to a reasonable size
+    """
+    import os
+
+    import cdsapi
+
+    from joblib import Parallel, delayed
+    from numpy import ndarray
+
+    if isinstance(year, (list, tuple, ndarray)):
+        inputs = []
+        for y in year:
+            inputs += (
+                (dict(year=y, month=month, cds_var_names=cds_var_names, dest=dest)),
+            )
+        results = Parallel(n_jobs=6)(
+            delayed(era5_slp)(**input_dict) for input_dict in inputs
+        )
+        return results
+
+    year = str(year)
+    month = [f"{m:02d}" for m in range(1, 13)] if month is None else month
+    sname = os.path.join(dest, f"ERA5_surfpress_monthly_{year}.nc")
+
+    if os.path.isfile(sname):
+        return sname
+
+    cds_client = cdsapi.Client()
+    cds_client.retrieve(
+        "reanalysis-era5-single-levels-monthly-means",
+        {
+            "product_type": "monthly_averaged_reanalysis",
+            "format": "netcdf",
+            "variable": cds_var_names,
+            "year": year,
+            "month": month,
+            "time": ["00:00"],
+        },
+        sname,
+    )
+
+    return sname

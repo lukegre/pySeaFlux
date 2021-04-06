@@ -1,6 +1,8 @@
 """
-Helper functions
-----------------
+Area calculations
+-----------------
+
+Calculates the area of pixels for a give grid input.
 """
 
 
@@ -62,10 +64,27 @@ def area_grid(lat, lon, return_dataarray=False):
             area.T,
             dims=["lat", "lon"],
             coords={"lat": lat, "lon": lon},
-            attrs={
-                "long_name": "area_per_pixel",
-                "description": "area per pixel",
-                "units": "m^2",
-            },
+            attrs=dict(
+                long_name="Area per pixel",
+                units="m^2",
+                description=(
+                    "Area per pixel as calculated by SeaFlux. The non-"
+                    "spherical shape of Earth is taken into account."
+                ),
+            ),
         )
+
         return xda
+
+
+def get_area_from_dataset(dataarray, lat_name="lat", lon_name="lon"):
+    """
+    Calculate the grid cell area from a xr.Dataset or xr.DataArray.
+    """
+    da = dataarray
+    x = da.lon.values
+    y = da.lat.values
+
+    area = area_grid(y, x, return_dataarray=True)
+
+    return area

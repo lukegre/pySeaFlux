@@ -27,7 +27,7 @@ def flux_bulk(
 
     .. warning::
         Note that you have to be very aware of the impact on resampled winds
-        where there is a loss of information when averaging. For now, I recommend
+        where there is a loss of variability when averaging. For now, I recommend
         to use the lower level functions
 
     Args:
