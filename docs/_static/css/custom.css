@@ -4,8 +4,19 @@
 
 .wy-nav-side{
     background: #1d3550;
+    padding-left: 15px;
     }
 
 .wy-menu-vertical header, .wy-menu-vertical p.caption{
     color: #dfa844
+}
+
+.caption-text{
+    padding-left: 5px;
+    padding-top: 10px;
+}
+
+body > div > nav > div > div.wy-menu.wy-menu-vertical > p{
+    margin-top: 15px;
+    margin-bottom: 10px;
 }

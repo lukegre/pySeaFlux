@@ -87,6 +87,7 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
+html_favicon = "favicon.ico"
 html_logo = "img/seaflux_logo.png"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.

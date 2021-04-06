@@ -28,18 +28,17 @@ Installation
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents
 
-   getting_data
    data_product
+   api
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Help and Reference
 
-   api
    contributing
    authors
    GitHub Repo <https://github.com/lukegre/SeaFlux>
