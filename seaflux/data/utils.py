@@ -3,6 +3,43 @@ Utilities for data set homogenisation, metadata, and plotting
 """
 
 
+def save_seaflux(xds, dest, variable_name):
+    """Helper function to save netCDF files with the correct meta data"""
+    from datetime import datetime as dt
+    from pathlib import Path as path
+
+    import xarray as xr
+
+    from .config import citation, contact, version, year_range
+
+    if isinstance(xds, xr.DataArray):
+        xds = xds.to_dataset(name=variable_name)
+    elif not isinstance(xds, xr.Dataset):
+        raise TypeError("xds must be a dataset or dataarray")
+
+    xds = xds.sel(time=slice(str(year_range[0]), str(year_range[1])))
+
+    assert variable_name in xds
+    if "time" in xds:
+        t0, t1 = xds.time.dt.year.values[[0, -1]]
+        date_range = f"_{t0}-{t1}"
+
+    sname = f"SeaFlux_{version}_{variable_name}{date_range}.nc"
+    full_path = path(dest) / sname
+
+    xds.attrs["citation"] = citation
+    xds.attrs["prodct_version"] = version
+    xds.attrs["date_created"] = dt.now().strftime("Y%-%m-%d")
+    xds.attrs["contact"] = contact
+
+    print(f"[SeaFlux] Saving {variable_name} to {full_path}")
+
+    encoding = {k: dict(zlib=True, complevel=4) for k in xds}
+    xds.to_netcdf(full_path, encoding=encoding)
+
+    return full_path
+
+
 def add_history(xds, message):
     """
     Adds history to xr.Datasets with a time stamp and [SeaFlux] prefix
@@ -82,6 +119,22 @@ def order_lon_180(xds):
     return xds
 
 
+def sort_lats(xds):
+    """sort lats"""
+    if "lat" not in xds.dims:
+        return xds
+
+    import numpy as np
+
+    lat = xds.lat.values
+    delta = np.diff(lat[[0, -1]])
+    if delta < 0:
+        xds = xds.sortby("lat")
+        xds = add_history(xds, "Sorted lats")
+
+    return xds
+
+
 def interpolate_coords(xds):
     """interpolates coordinates onto a global grid"""
     import numpy as np
@@ -145,20 +198,38 @@ def center_time_on_15th(xds):
 
     xds["time"] = xr.DataArray(data=t, dims=["time"], coords={"time": t})
 
-    xds = xds.sel(time=slice("1980", "2018"))
-    xds = add_history(xds, "Time set to 15th of each month and 198[0/5]-2018")
+    xds = add_history(xds, "Time set to 15th of each month")
 
     return xds
 
 
+def add_coord_attrs(xds):
+    """Ensures that files are Georeferened for Panoply"""
+    xds["lat"].attrs = dict(
+        standard_name="latitude",
+        units="degrees_north",
+        axis="Y",
+    )
+    xds["lon"].attrs = dict(
+        standard_name="longitude",
+        units="degrees_east",
+        axis="X",
+    )
+    return xds
+
+
 def preprocess(
+    *args,
     rename_coordinates=True,
+    sort_latitudes=True,
     center_months=True,
     interpolate_coordinates=True,
     lon_0_180=True,
     transpose_dims=True,
+    add_coord_attributes=True,
 ):
     """
+    Args are additional functions that are applied in sequence
     A function generator that can be used as follows:
         reccap2_formatted_xds = xr.open_mfdataset(
             fname, decode_times=False,
@@ -170,16 +241,25 @@ def preprocess(
 
     def dataprep(ds):
         "wrapped function"
+
+        for func in args:
+            ds = func(ds)
+
         if rename_coordinates:
             ds = rename_coords(ds)
-        if center_months:
-            ds = center_time_on_15th(ds)
+        if transpose_dims:
+            ds = transpose(ds)
+        if sort_latitudes:
+            ds = sort_lats(ds)
         if lon_0_180:
             ds = order_lon_180(ds)
         if interpolate_coordinates:
             ds = interpolate_coords(ds)
-        if transpose_dims:
-            ds = transpose(ds)
+        if center_months:
+            ds = center_time_on_15th(ds)
+        if add_coord_attributes:
+            ds = add_coord_attrs(ds)
+
         return ds
 
     return dataprep
