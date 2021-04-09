@@ -4,7 +4,8 @@
 
 .wy-nav-side{
     background: #1d3550;
-    padding-left: 15px;
+    padding-left: 5px;
+    width: 310px;
     }
 
 .wy-menu-vertical header, .wy-menu-vertical p.caption{

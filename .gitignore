@@ -85,3 +85,6 @@ junit.xml
 seaflux/_version.py
 
 *.nc
+*.ZIP
+*.zip
+/data
