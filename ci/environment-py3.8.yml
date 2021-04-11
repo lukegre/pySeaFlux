@@ -14,6 +14,7 @@ dependencies:
   - pip:
     - codecov
     - pytest-cov
+    - fetch-data
     - coverage[toml]
     - pooch
     - PyCO2SYS

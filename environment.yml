@@ -2,7 +2,7 @@ name: seaflux
 channels:
   - conda-forge
 dependencies:
-  # Required for full project functionality (dont remove)
+  # Required for full project functionality (don't remove)
   - pytest
   # Examples (remove and add as needed)
   - numpy
@@ -10,6 +10,7 @@ dependencies:
   - pandas
   - xarray
   - netcdf4
-  - pip 
+  - pip
   - pip:
     - pooch
+    - fetch-data

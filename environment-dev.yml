@@ -27,6 +27,7 @@ dependencies:
     - PyCO2SYS
     - docrep<=0.2.7
     - nbsphinx
+    - fetch-data
     - jupyter_client
     - sphinx_pangeo_theme
     - sphinx-copybutton
