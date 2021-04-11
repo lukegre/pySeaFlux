@@ -1,0 +1,38 @@
+# File can only have one entry
+seaflux_data:
+  # name is optional to make the README.txt file pretty with a header
+  name: "SeaFlux data for air-sea CO2 flux calculations"
+  # all files will be downloaded to this directory. Will be created if it doesn't exist
+  dest: ~/Downloads/SeaFlux_v2021.01
+  # all urls will be downloaded
+  url:
+    - https://zenodo.org/record/4664653/files/SeaFluxV2021.01_solWeis74.nc
+    - https://zenodo.org/record/4664653/files/SeaFluxV2021.01_icefrac_1988-2018.nc
+    - https://zenodo.org/record/4664653/files/SeaFluxV2021.01_kwScaled16.5cmhr_1988-2018.nc
+    - https://zenodo.org/record/4664653/files/SeaFluxV2021.01_pCO2atm_NOAAmbl%2BERA5mslp_1988-2018.nc
+    - https://zenodo.org/record/4664653/files/SeaFluxV2021.01_spCO2filled_1988-2018.nc
+  # all metadata will be written to the README.txt file and the netCDF file's global attributes
+  meta:
+    contact: luke.gregor@usys.ethz.ch
+    # doi will always take you to the latest release and can be used to cite all data
+    doi: https://doi.org/10.5281/zenodo.4133802
+    # needs to be updated when the paper is released
+    citation: >
+      Fay, A. R., Gregor, L., Landschuetzer, P., McKinley, G. A., Gruber, N.,
+      Gehlen, M., Iida, Y., Laruelle, G. G., Roedenbeck, C., and Zeng, J.:
+      Harmonization of global surface ocean pCO2 mapped products and their
+      flux calculations; an improved estimate of the ocean carbon sink, Earth
+      Syst. Sci. Data Discuss. [preprint], https://doi.org/10.5194/essd-2021-16,
+      in review, 2021.
+    # extract from the abstract
+    description: >
+      The ensemble data product, SeaFlux (Fay et al. (2021),
+      doi.org/10.5281/zenodo.4133802, https://github.com/luke-gregor/SeaFlux),
+      accounts for the diversity of the underlying mapping methodologies.
+      Utilizing six global observation-based mapping products, the SeaFlux ensemble
+      approach adjusts for methodological inconsistencies in flux calculations
+      that can result in an average error of 15 % in global mean flux estimates.
+      We address differences in spatial coverage of the surface ocean CO2
+      between the mapping products which ultimately yields an increase in CO2
+      uptake of up to 19 % for some products. Fluxes are calculated using three
+      wind products (CCMPv2, ERA5, and JRA55).

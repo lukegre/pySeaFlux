@@ -4,6 +4,24 @@ from pathlib import Path as path
 base = str(path(__file__).resolve().parent.parent)
 
 
+def area(aux_catalog_fname, dest="../data/output/"):
+    """Computes the area of the SeaFlux grid cells"""
+    import xarray as xr
+
+    from fetch_data import read_catalog
+
+    from ..area import get_area_from_dataset
+    from .utils import save_seaflux
+
+    cat = read_catalog(aux_catalog_fname)
+
+    ds = xr.open_mfdataset(download_sst_ice(cat["oisst_v2"])).sst.rename("temp")
+    area = get_area_from_dataset(ds)
+
+    sname = save_seaflux(area, dest, "area")
+    return sname
+
+
 def solubility(aux_catalog_fname, dest="../data/output/"):
     """Computes SeaFlux solubility from SST, Salt and Pres"""
     import xarray as xr

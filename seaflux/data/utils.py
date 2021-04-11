@@ -17,12 +17,13 @@ def save_seaflux(xds, dest, variable_name):
     elif not isinstance(xds, xr.Dataset):
         raise TypeError("xds must be a dataset or dataarray")
 
-    xds = xds.sel(time=slice(str(year_range[0]), str(year_range[1])))
-
     assert variable_name in xds
     if "time" in xds:
+        xds = xds.sel(time=slice(str(year_range[0]), str(year_range[1])))
         t0, t1 = xds.time.dt.year.values[[0, -1]]
         date_range = f"_{t0}-{t1}"
+    else:
+        date_range = ""
 
     sname = f"SeaFlux_{version}_{variable_name}{date_range}.nc"
     full_path = path(dest) / sname
