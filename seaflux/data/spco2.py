@@ -11,13 +11,13 @@ from fetch_data import download
 from .utils import preprocess
 
 
-def main(catalog_fname="../data/spco2_data.yml", dest="../data/output/"):
+def main(catalog_fname="../data/spco2_data.yml", dest="../data/output/", verbose=True):
     """
     Runs functions to compute the filling data for SeaFlux
     """
     from .utils import save_seaflux
 
-    ds = SOCOMensemble(catalog_fname).data
+    ds = SOCOMensemble(catalog_fname, verbose=verbose).data
 
     # remove JMA for a longer time series (1985-2019)
     drop = ["seamask", "MPI_ULB_SOMFFN", "month", "JMA_MLR"]
@@ -161,7 +161,7 @@ class SOCOMensemble:
     Creates an object that makes it easy to access SOCOM data
     """
 
-    def __init__(self, catalog_fname):
+    def __init__(self, catalog_fname, verbose=True):
         """
         An object that downloads, reads in, homogenizes and combines
         surface ocean pCO2 products.
@@ -188,14 +188,15 @@ class SOCOMensemble:
         self.cat = read_catalog(catalog_fname)
 
         self.members = [
-            "mpi_somffn",
             "jena_mls",
+            "mpi_somffn",
             "cmems_ffnn",
             "csir_ml6",
             "not there",
             "nies_fnn",
             "jma_mlr",
         ]
+        self.climatology = 'mpi_ulb_somffn'
 
         missing = [key for key in self.members if key not in self.cat]
         if any(missing):
@@ -203,6 +204,8 @@ class SOCOMensemble:
                 self.members.remove(m)
 
         self._data = None
+        self.verbose = verbose
+        self.aux_catalog_name = '../data/aux_data.yml'
 
         print("[SeaFlux] Default ensemble members in catalog:", ", ".join(self.members))
 
@@ -267,10 +270,11 @@ class SOCOMensemble:
 
         kwargs = self.cat[name]
         meta = kwargs.get("meta", {})
-
+        kwargs['verbose'] = self.verbose
+        
         url = kwargs.get("url")
         url = url[0] if isinstance(url, list) else url
-
+        
         data = func(kwargs).rename(name.upper()).load()
 
         data = data.assign_attrs(source=url, **meta)
@@ -344,7 +348,7 @@ class SOCOMensemble:
     def get_cmems_ffnn(entry):
         """processes data"""
 
-        flist = download(**entry, verbose=20)
+        flist = download(**entry, n_jobs=8)
 
         xds = xr.open_mfdataset(flist, combine="nested", concat_dim="time")
         xda = (
@@ -365,9 +369,10 @@ class SOCOMensemble:
     def get_nies_fnn(entry):
         """processes data"""
         from warnings import filterwarnings
-
+        
+        from fetch_data import read_catalog
         from ..fco2_pco2_conversion import fCO2_to_pCO2
-        from ..utils import add_history
+        from .utils import add_history
         from .aux_vars import download_era5_slp, download_sst_ice
 
         filterwarnings("ignore", category=RuntimeWarning)
@@ -395,9 +400,11 @@ class SOCOMensemble:
 
         flist = download(**entry)
         xda = xr.open_mfdataset(flist, preprocess=preprocess(decode_time)).fco2
-
+        
+        aux_cat = read_catalog('../data/aux_data.yml')
+        
         t0, t1 = [str(s) for s in xda.time.values[[0, -1]]]
-        sst = xr.open_dataset(download_sst_ice())["sst"].sel(time=slice(t0, t1))
+        sst = xr.open_dataset(download_sst_ice(aux_cat['oisst_v2']))["sst"].sel(time=slice(t0, t1))
         msl = xr.open_dataset(download_era5_slp())["sp"].sel(time=slice(t0, t1)) / 100
 
         pco2 = xr.DataArray(
@@ -438,7 +445,7 @@ class SOCOMensemble:
 
             return xds
 
-        flist = download(**entry, verbose=20)
+        flist = download(**entry, n_jobs=8)
 
         xda = xr.open_mfdataset(
             flist, decode_times=False, preprocess=preprocess(decode_time)
@@ -451,7 +458,7 @@ class SOCOMensemble:
     def get_csir_ml6(entry):
         """processes data"""
 
-        flist = download(**entry, verbose=20)
+        flist = download(**entry)
         xds = xr.open_mfdataset(flist, preprocess=preprocess())
 
         xds = xds["spco2"].assign_attrs(
