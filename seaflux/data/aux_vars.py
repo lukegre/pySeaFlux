@@ -33,6 +33,7 @@ def solubility(aux_catalog_fname, dest="../data/output/"):
 
     cat = read_catalog(aux_catalog_fname)
 
+    print("[SeaFlux] fetching SST, Salinity, and sea-level pressure")
     ds = xr.merge(
         [
             xr.open_dataset(download_sst_ice(cat["oisst_v2"])).sst.rename("temp")
@@ -51,6 +52,7 @@ def solubility(aux_catalog_fname, dest="../data/output/"):
     # unit analysis
     # mol / L / atm --> mol / m3 / uatm
     # mol . L-1 . atm-1 * (1e3L . m-3) * (1e-6 atm . uatm-1) = * 1e-3
+    print("[SeaFlux] calculating solubility using Weiss (1974)")
     arr = solubility_weiss1974(ds.salt, ds.temp, press_atm=ds.mslp) * 1e-3
 
     sol = xr.DataArray(
@@ -69,7 +71,7 @@ def solubility(aux_catalog_fname, dest="../data/output/"):
     return sname
 
 
-def save_ice_cover(catalog_fname, dest="../data/output/"):
+def sea_ice_cover(aux_catalog_fname, dest="../data/output/"):
     """Calculates SeaFlux sea ice cover as a fraction"""
     import xarray as xr
 
@@ -77,7 +79,7 @@ def save_ice_cover(catalog_fname, dest="../data/output/"):
 
     from .utils import save_seaflux
 
-    cat = read_catalog(catalog_fname)
+    cat = read_catalog(aux_catalog_fname)
 
     fname = download_sst_ice(cat["oisst_v2"])
     variable = "ice"

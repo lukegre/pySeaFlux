@@ -19,7 +19,7 @@ quiet = false
 color = true
 
 [tool.isort]
-known_third_party = ["PyCO2SYS", "fetch_data", "numpy", "pandas", "pkg_resources", "setuptools", "xarray"]
+known_third_party = ["PyCO2SYS", "fetch_data", "numpy", "pandas", "pkg_resources", "requests", "setuptools", "xarray"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
