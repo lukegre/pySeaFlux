@@ -40,7 +40,7 @@ def solubility(aux_catalog_fname, dest="../data/output/"):
             + 273.15,
             xr.open_dataset(download_salinity(cat["en4_g10"])).salinity.rename("salt"),
             xr.open_dataset(
-                download_era5_slp(download_dest=cat["era5_mslp"])
+                download_era5_slp(download_dest=cat["era5_mslp"]['dest'])
             ).sp.rename("mslp")
             / 101325,
         ]
@@ -120,9 +120,9 @@ def download_era5_slp(
         return process_dest
 
     if isinstance(year, (list, tuple, ndarray)):
-        logging.info(f"[DOWNLOAD]  downloading to: {download_dest}")
+        logging.info(f"downloading to: {download_dest}")
         inputs = [dict(year=y, download_dest=download_dest) for y in year]
-        flist = Parallel(n_jobs=1)(
+        flist = Parallel(n_jobs=8)(
             delayed(download_era5_slp)(**input_dict) for input_dict in inputs
         )
         ds = xr.open_mfdataset(flist, preprocess=preprocess())
@@ -169,7 +169,7 @@ def download_era5_slp(
 
 
 def download_salinity(
-    catalog_entry,
+    catalog_entry, verbose=True, 
     process_dest="../data/processed/en4_salt_temp.nc",
 ):
     """Downloads salinity from MetOffice for 1982 until today"""
@@ -182,7 +182,7 @@ def download_salinity(
     if path(process_dest).is_file():
         return process_dest
 
-    flist = download(**catalog_entry)
+    flist = download(**catalog_entry, verbose=verbose)
     ds = preprocess()(
         xr.open_mfdataset(paths=flist)[["salinity"]]
         .sel(depth=0, method="nearest")
