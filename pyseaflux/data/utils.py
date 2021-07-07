@@ -368,3 +368,61 @@ def style_line_subplot(ax, add_zero_line=True, xlim=None, y_range=None):
         ax.set_ylim(low, upp)
 
     return ax
+
+
+def parallel(func, n_jobs=8, verbose=True, threading=False):
+    """
+    Parallel implementation for any function
+
+    It's quick, it's dirty, it might fail, but it's beautiful when it works.
+    This wrapper uses joblib in the backend to run scripts in parallel.
+    """
+    from functools import wraps
+
+    @wraps(func)
+    def run_parallel(*args, n_jobs=n_jobs, verbose=verbose, **kwargs):
+        """Runs the function through joblib. limited funcionality"""
+        from collections.abc import Iterable
+
+        from joblib import Parallel, delayed
+
+        def isiter(v):
+            not_string = not isinstance(v, str)
+            is_iter = isinstance(v, Iterable)
+            return not_string and is_iter
+
+        if not all([isiter(a) for a in args]):
+            raise ValueError(
+                "Note that this function has been parallelised. You can thus "
+                "only pass arguments that are iterable to the function. "
+                "These can be lists, tuples, etc. but not strings. "
+                "All the iterable items must be the same length, if not, then "
+                "an error will be raised. "
+            )
+
+        lengths_args = set([len(a) for a in args if isiter(a)])
+        not_iters = all([not isiter(v) for v in kwargs.values()])
+
+        assert (
+            len(lengths_args) <= 1
+        ), "All parallel inputs must have the same length on the 1st dimension"
+        assert not_iters, "keyword arguments cannot be iterable"
+
+        len_arg = list(lengths_args)[0]
+        if len_arg < n_jobs:
+            n_jobs = len_arg
+
+        function = delayed(func)
+        parallel = Parallel(
+            verbose=verbose,
+            prefer="threading" if threading else "processes",
+            n_jobs=n_jobs,
+        )
+
+        delayed_calls = []
+        for arg in zip(*args):
+            delayed_calls += (function(*arg, **kwargs),)
+
+        return parallel(delayed_calls)
+
+    return run_parallel

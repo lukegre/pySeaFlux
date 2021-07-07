@@ -1,4 +1,4 @@
-import seaflux as sf
+import pyseaflux as sf
 
 
 def test_CO2flux_bulk():

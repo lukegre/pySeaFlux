@@ -12,14 +12,14 @@ ignore-semiprivate = true
 ignore-private = true
 ignore-property-decorators = true
 ignore-module = false
-fail-under = 95
+fail-under = 90
 exclude = ["setup.py", "docs", "tests"]
 verbose = 1
 quiet = false
 color = true
 
 [tool.isort]
-known_third_party = ["PyCO2SYS", "fetch_data", "numpy", "pandas", "pkg_resources", "requests", "setuptools", "xarray"]
+known_third_party = ["PyCO2SYS", "fetch_data", "numpy", "pandas", "pkg_resources", "setuptools", "xarray"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"

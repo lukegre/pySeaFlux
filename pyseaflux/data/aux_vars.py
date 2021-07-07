@@ -40,7 +40,7 @@ def solubility(aux_catalog_fname, dest="../data/output/"):
             + 273.15,
             xr.open_dataset(download_salinity(cat["en4_g10"])).salinity.rename("salt"),
             xr.open_dataset(
-                download_era5_slp(download_dest=cat["era5_mslp"]['dest'])
+                download_era5_slp(download_dest=cat["era5_mslp"]["dest"])
             ).sp.rename("mslp")
             / 101325,
         ]
@@ -169,7 +169,8 @@ def download_era5_slp(
 
 
 def download_salinity(
-    catalog_entry, verbose=True, 
+    catalog_entry,
+    verbose=True,
     process_dest="../data/processed/en4_salt_temp.nc",
 ):
     """Downloads salinity from MetOffice for 1982 until today"""

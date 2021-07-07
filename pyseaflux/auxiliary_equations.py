@@ -2,12 +2,13 @@
 Additional equations
 --------------------
 
-Not necessarily linked to the marine carbonate system, but are 
-useful. 
+Not necessarily linked to the marine carbonate system, but are
+useful.
 """
 
-from . import check_units as check
 import numpy as np
+
+from . import check_units as check
 
 
 def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
@@ -16,13 +17,13 @@ def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
     Args:
         pres_hPa (array): Pressure in kiloPascal measured at height
         tempSW_C (array): Temperature of the seawater in deg C
-        sensor_height (float, optional): the height of the sensor above sea 
+        sensor_height (float, optional): the height of the sensor above sea
             level. Can be negative if you want to convert SLP to sensor height
             pressure. Defaults to 10.0.
 
     Returns:
         array: height corrected pressure
-    """    
+    """
 
     T = check.temp_K(tempSW_C + 273.15)  # temperature in Kelvin
     P = check.pres_atm(pres_hPa / 1013.25)  # pressure in Pascal
