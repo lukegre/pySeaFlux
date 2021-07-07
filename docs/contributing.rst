@@ -3,11 +3,11 @@ Contribution Guide
 ==================
 
 Contributions are highly welcomed and appreciated.  Every little help counts,
-so do not hesitate! You can make a high impact on ``seaflux`` just by using it and
-reporting `issues <https://github.com/lukegre/SeaFlux/issues>`__.
+so do not hesitate! You can make a high impact on ``pyseaflux`` just by using it and
+reporting `issues <https://github.com/lukegre/pySeaFlux/issues>`__.
 
 The following sections cover some general guidelines
-regarding development in ``seaflux`` for maintainers and contributors.
+regarding development in ``pyseaflux`` for maintainers and contributors.
 
 Nothing here is set in stone and can't be changed.
 Feel free to suggest improvements or changes in the workflow.
@@ -25,7 +25,7 @@ Feature requests and feedback
 
 We are eager to hear about your requests for new features and any suggestions about the
 API, infrastructure, and so on. Feel free to submit these as
-`issues <https://github.com/lukegre/SeaFlux/issues/new>`__ with the label "feature request."
+`issues <https://github.com/lukegre/pySeaFlux/issues/new>`__ with the label "feature request."
 
 Please make sure to explain in detail how the feature should work and keep the scope as
 narrow as possible. This will make it easier to implement in small PRs.
@@ -36,7 +36,7 @@ narrow as possible. This will make it easier to implement in small PRs.
 Report bugs
 -----------
 
-Report bugs for ``seaflux`` in the `issue tracker <https://github.com/lukegre/SeaFlux/issues>`_
+Report bugs for ``seaflux`` in the `issue tracker <https://github.com/lukegre/pySeaFlux/issues>`_
 with the label "bug".
 
 If you can write a demonstration test that currently fails but should pass
@@ -48,7 +48,7 @@ that is a very useful commit to make as well, even if you cannot fix the bug its
 Fix bugs
 --------
 
-Look through the `GitHub issues for bugs <https://github.com/lukegre/SeaFlux/labels/bug>`_.
+Look through the `GitHub issues for bugs <https://github.com/lukegre/pySeaFlux/labels/bug>`_.
 
 Talk to developers to find out how you can fix specific bugs.
 
@@ -58,8 +58,8 @@ Preparing Pull Requests
 -----------------------
 
 #. Fork the
-   `seaflux GitHub repository <https://github.com/lukegre/SeaFlux>`__.  It's
-   fine to use ``seaflux`` as your fork repository name because it will live
+   `seaflux GitHub repository <https://github.com/lukegre/pySeaFlux>`__.  It's
+   fine to use ``pyseaflux`` as your fork repository name because it will live
    under your username.
 
 #. Clone your fork locally using `git <https://git-scm.com/>`_, connect your repository
@@ -82,9 +82,9 @@ Preparing Pull Requests
 
 #. Activate your environment::
 
-   $ conda activate test_env_seaflux
+   $ conda activate test_env_pyseaflux
 
-#. Install the SeaFlux package::
+#. Install the pySeaFlux package::
 
    $ pip install -e . --no-deps
 
@@ -140,10 +140,10 @@ Preparing Pull Requests
 
 #. Finally, submit a pull request through the GitHub website using this data::
 
-    head-fork: YOUR_GITHUB_USERNAME/seaflux
+    head-fork: YOUR_GITHUB_USERNAME/pyseaflux
     compare: your-branch-name
 
-    base-fork: lukegre/SeaFlux
+    base-fork: lukegre/pySeaFlux
     base: master
 
    The merged pull request will undergo the same testing that your local branch

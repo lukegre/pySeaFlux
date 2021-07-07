@@ -1,4 +1,4 @@
-name: seflux-dev
+name: pyseaflux-dev
 channels:
   - conda-forge
 dependencies:

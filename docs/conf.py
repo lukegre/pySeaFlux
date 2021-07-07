@@ -27,7 +27,7 @@ sys.path.insert(0, str(root))
 print("python exec:", sys.executable)
 print("sys.path:", sys.path)
 
-import seaflux  # isort:skip
+import pyseaflux  # isort:skip
 
 # -- Project information -----------------------------------------------------
 
