@@ -221,3 +221,36 @@ def download_sst_ice(
     ds.to_netcdf(process_dest, encoding={k: dict(zlib=True, complevel=4) for k in ds})
 
     return process_dest
+
+
+def calc_seafrac(
+    process_dest="../data/processed/etopo1_seafrac.nc",
+):
+    from fetch_data import download
+    from numpy import arange
+    from xarray import open_mfdataset
+
+    fname = download(
+        url=(
+            "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/"
+            "ice_surface/cell_registered/netcdf/ETOPO1_Ice_c_gmt4.grd.gz"
+        ),
+        dest="../data/raw/",
+        verbose=True,
+    )
+
+    ds = open_mfdataset(fname).rename(x="lon", y="lat", z="topography")
+    sea = ds.topography < 0
+
+    seafrac = sea.coarsen(lat=60, lon=60).sum().compute() / 60 ** 2
+    seafrac = seafrac.assign_coords(
+        lat=arange(-89.5, 90), lon=arange(-179.5, 180)
+    ).rename("seafrac")
+    seafrac.attrs = dict(
+        description="Fraction of pixel that is covered by ocean. Calculated from ETOPO1. ",
+        unit="frac",
+    )
+
+    seafrac.to_netcdf(process_dest)
+
+    return process_dest
