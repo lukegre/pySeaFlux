@@ -7,7 +7,7 @@ TODO: future version may hold the file names here too.
 
 zenodo_url = "https://zenodo.org/record/4664653"
 
-year_range = [1985, 2019]
+year_range = [1982, 2019]
 version = "v2021.02"
 contact = "luke.gregor@usys.ethz.ch"
 citation = (
