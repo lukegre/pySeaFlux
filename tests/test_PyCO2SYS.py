@@ -1,7 +1,7 @@
 # Tests against PyCO2SYS (originally v1.6.0).
 #
 # Weiss (1974) CO2 solubility cannot be directly tested because PyCO2SYS evaluates this
-# in /kg units while SeaFlux uses /l units.
+# in /kg units while pyseaflux uses /l units.
 
 import numpy as np
 import PyCO2SYS as pyco2

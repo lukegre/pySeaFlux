@@ -15,7 +15,7 @@ def test_limits_warn():
 def test_limits_raise():
     import numpy as np
 
-    from seaflux.check_units import UnitError, check_array_bounds
+    from pyseaflux.check_units import UnitError, check_array_bounds
 
     arr = np.random.normal(0, 2, size=100)
     try:
