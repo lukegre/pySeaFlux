@@ -6,7 +6,7 @@
 import numpy as np
 import PyCO2SYS as pyco2
 
-import seaflux as sf
+import pyseaflux as sf
 
 
 # Seed random number generator for reproducibility

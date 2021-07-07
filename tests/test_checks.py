@@ -1,6 +1,7 @@
 def test_limits_warn():
-    from seaflux.check_units import check_array_bounds
     import numpy as np
+
+    from pyseaflux.check_units import check_array_bounds
 
     arr = np.random.normal(0, 2, size=100)
     n_outside = (arr < -2).sum() + (arr > 2).sum()
@@ -12,8 +13,9 @@ def test_limits_warn():
 
 
 def test_limits_raise():
-    from seaflux.check_units import check_array_bounds, UnitError
     import numpy as np
+
+    from seaflux.check_units import UnitError, check_array_bounds
 
     arr = np.random.normal(0, 2, size=100)
     try:
