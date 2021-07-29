@@ -402,7 +402,7 @@ class SOCOMensemble:
         flist = download(**entry)
         xda = xr.open_mfdataset(flist, preprocess=preprocess(decode_time)).fco2
 
-        aux_cat = read_catalog("../data/aux_data.yml")
+        aux_cat = read_catalog(self.aux_catalog_name)
 
         t0, t1 = [str(s) for s in xda.time.values[[0, -1]]]
         sst = xr.open_dataset(download_sst_ice(aux_cat["oisst_v2"]))["sst"].sel(
