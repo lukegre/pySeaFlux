@@ -16,7 +16,7 @@ Installing
 ----------
 
 ### GitHub
-`pip install git+https://github.com/luke-gregor/pySeaFlux.git`
+`pip install git+https://github.com/lukegre/pySeaFlux.git`
 
 ### PyPi
 `pip install pyseaflux`
