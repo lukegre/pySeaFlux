@@ -68,7 +68,7 @@ def area_grid(lat, lon, return_dataarray=False):
                 long_name="Area per pixel",
                 units="m^2",
                 description=(
-                    "Area per pixel as calculated by SeaFlux. The non-"
+                    "Area per pixel as calculated by pySeaFlux. The non-"
                     "spherical shape of Earth is taken into account."
                 ),
             ),

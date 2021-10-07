@@ -4,7 +4,7 @@ Conversions of fCO2 - pCO2
 """
 
 
-def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
+def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None, checks=True):
     """Convert fCO2 to pCO2 in sea water.
 
     If equilibrator temperature is provided, we get a simple approximate for
@@ -45,7 +45,6 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
         381.466027968504
     """
     from . import auxiliary_equations as eqs
-    from . import check_units as check
 
     # if equilibrator inputs are None, tempEQ=tempSW
     if tempEQ_C is None:
@@ -55,10 +54,10 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
         tempEQ_was_None = False
 
     # standardise the inputs and convert units
-    fCO2sw = check.CO2_mol(fCO2SW_uatm * 1e-6)
-    Tsw = check.temp_K(tempSW_C + 273.15)
-    Teq = check.temp_K(tempEQ_C + 273.15)
-    Peq = check.pres_atm(pres_hPa / 1013.25)
+    fCO2sw = fCO2SW_uatm * 1e-6
+    Tsw = tempSW_C + 273.15
+    Teq = tempEQ_C + 273.15
+    Peq = pres_hPa / 1013.25
 
     # calculate the CO2 diff due to equilibrator and seawater temperatures
     # if statement is there to save a bit of time
@@ -72,13 +71,13 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None):
     # Not getting the exact equilibrator xCO2
     xCO2eq = fCO2sw * dT / Peq
 
-    pCO2SW = fCO2sw / virial_coeff(Tsw, Peq, xCO2eq)
+    pCO2SW = fCO2sw / virial_coeff(Tsw, Peq, xCO2eq, checks=checks)
     pCO2SW_uatm = pCO2SW * 1e6
 
     return pCO2SW_uatm
 
 
-def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
+def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None, checks=False):
 
     """Convert pCO2 to fCO2 in sea water to account for non-ideal behaviour of CO2
 
@@ -116,7 +115,6 @@ def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
         378.53960618459695
     """
     from . import auxiliary_equations as eqs
-    from . import check_units as check
 
     # if equilibrator inputs are None then make defaults Patm=1, tempEQ=tempSW
     if tempEQ_C is None:
@@ -125,10 +123,10 @@ def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
         pres_hPa = 1013.25
 
     # standardise the inputs and convert units
-    pCO2sw = check.CO2_mol(pCO2SW_uatm * 1e-6)
-    Tsw = check.temp_K(tempSW_C + 273.15)
-    Teq = check.temp_K(tempEQ_C + 273.15)
-    Peq = check.pres_atm(pres_hPa / 1013.25)
+    pCO2sw = pCO2SW_uatm * 1e-6
+    Tsw = tempSW_C + 273.15
+    Teq = tempEQ_C + 273.15
+    Peq = pres_hPa / 1013.25
 
     # calculate the CO2 diff due to equilibrator and seawater temperatures
     dT = eqs.temperature_correction(Tsw, Teq)
@@ -136,13 +134,13 @@ def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None):
     # one would have to use pCO2 / Peq to get real xCO2
     xCO2eq = pCO2sw * dT / Peq
 
-    fCO2sw = pCO2sw * virial_coeff(Tsw, Peq, xCO2eq)
+    fCO2sw = pCO2sw * virial_coeff(Tsw, Peq, xCO2eq, checks=checks)
     fCO2sw_uatm = fCO2sw * 1e6
 
     return fCO2sw_uatm
 
 
-def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
+def virial_coeff(temp_K, pres_atm, xCO2_mol=None, checks=False):
     """
     Calculate the ideal gas correction factor for converting pCO2 to fCO2.
 
@@ -176,17 +174,18 @@ def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
 
     Compared with the Seacarb package in R
     """
-    from numpy import array, exp
+    from numpy import array, exp, nanmedian
 
-    from . import check_units as check
-
-    T = check.temp_K(temp_K)
-    P = check.pres_atm(pres_atm)
-    C = array(xCO2_mol)
+    if checks:
+        if nanmedian(temp_K) < 270:
+            raise ValueError('Temperature is not in Kelvin')
+        if nanmedian(pres_atm) > 10:
+            raise ValueError('Pressure is not in atmospheres')
+    
+    T = temp_K    
+    P = pres_atm
+    C = xCO2_mol
     R = 82.057  # gas constant for ATM
-
-    check.temp_K(T)
-    check.pres_atm(P)
 
     # B is the virial coefficient for pure CO2
     B = -1636.75 + 12.0408 * T - 0.0327957 * T ** 2 + 3.16528e-5 * T ** 3
@@ -196,7 +195,6 @@ def virial_coeff(temp_K, pres_atm, xCO2_mol=None):
     # "x2" term often neglected (assumed = 1) in applications of Weiss's
     # (1974) equation 9
     if xCO2_mol is not None:
-        check.CO2_mol(C)
         x2 = (1 - C) ** 2
     else:
         x2 = 1

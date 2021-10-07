@@ -3,11 +3,7 @@ CO2 solubility in seawater
 --------------------------
 """
 
-from . import check_units as check
-from . import vapour_pressure as vapress
-
-
-def solubility_weiss1974(salt, temp_K, press_atm=1):
+def solubility_weiss1974(salt, temp_K, press_atm=1, checks=True):
     """Calculates the solubility of CO2 in sea water
 
     Used in the calculation of air-sea CO2 fluxes. We use the formulation by
@@ -30,11 +26,16 @@ def solubility_weiss1974(salt, temp_K, press_atm=1):
         0.029285284543519093
     """
 
-    from numpy import exp, log
+    from numpy import exp, log, nanmedian
+    from . import vapour_pressure as vapress
+    
+    if checks:
+        if nanmedian(temp_K) < 270:
+            raise ValueError('Temperature is not in Kelvin')
 
-    T = check.temp_K(temp_K)
-    S = check.salt(salt)
-    P = check.pres_atm(press_atm)
+    T = temp_K
+    S = salt
+    P = press_atm
 
     # from table in Wanninkhof 2014
     a1 = -58.0931

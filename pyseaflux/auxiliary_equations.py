@@ -11,7 +11,7 @@ import numpy as np
 from . import check_units as check
 
 
-def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
+def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0, checks=True):
     """Returns exact sea level pressure if the sensor is measuring at height
 
     Args:
@@ -24,9 +24,16 @@ def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0):
     Returns:
         array: height corrected pressure
     """
+    from numpy import nanmedian
+    
+    if checks:
+        if nanmedian(tempSW_C) > 270:
+            raise ValueError('Temperature is not in Celcius')
+        if nanmedian(pres_hPa) < 10:
+            raise ValueError('Pressure is not in hPa')
 
-    T = check.temp_K(tempSW_C + 273.15)  # temperature in Kelvin
-    P = check.pres_atm(pres_hPa / 1013.25)  # pressure in Pascal
+    T = tempSW_C + 273.15  # temperature in Kelvin
+    P = pres_hPa * 100  # pressure in Pascal
 
     # Correction for pressure based on sensor height
     R = 8.314  # universal gas constant (J/mol/K)
@@ -54,7 +61,7 @@ def temperature_correction(temp_in, temp_out):
         pCO_2^{Tout} = pCO_2^{Tin} * T^{factor}
 
     Args:
-        temp_in (array): temperature at which original pCO2 is measured
+        temp_in (array): temperature at which original pCO2 is measured (degK or degC)
         temp_out (array): temperature for which pCO2 should be represented
 
     Returns:
@@ -67,8 +74,8 @@ def temperature_correction(temp_in, temp_out):
     """
     # see the Takahashi 1993 paper for full description
 
-    Ti = np.array(temp_in)
-    To = np.array(temp_out)
+    Ti = temp_in
+    To = temp_out
 
     factor = np.exp(0.0433 * (To - Ti) - 4.35e-05 * (To ** 2 - Ti ** 2))
 

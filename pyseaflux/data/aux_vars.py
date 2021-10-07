@@ -223,34 +223,58 @@ def download_sst_ice(
     return process_dest
 
 
-def calc_seafrac(
-    process_dest="../data/processed/etopo1_seafrac.nc",
+def ocean_area(
+    download_dest='../data/raw/ETOPO1/', 
+    processed_dest='../data/processed/etopo1_ocean_area.nc'
 ):
-    from fetch_data import download
-    from numpy import arange
-    from xarray import open_mfdataset
+    import xarray as xr
+    import fetch_data as fd
+    import numpy as np
+    from ..area import get_area_from_dataset
 
-    fname = download(
+    from pathlib import Path as path
+    
+    sname = f"{base}/{processed_dest}"
+    if path(sname).is_file():
+        return sname
+    
+    fname = fd.download(
         url=(
-            "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/"
-            "ice_surface/cell_registered/netcdf/ETOPO1_Ice_c_gmt4.grd.gz"
-        ),
-        dest="../data/raw/",
-        verbose=True,
+            'https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/'
+            'ice_surface/cell_registered/netcdf/ETOPO1_Ice_c_gmt4.grd.gz'),
+        dest=f'{base}/{download_dest}',
+        verbose=True
     )
-
-    ds = open_mfdataset(fname).rename(x="lon", y="lat", z="topography")
-    sea = ds.topography < 0
-
-    seafrac = sea.coarsen(lat=60, lon=60).sum().compute() / 60 ** 2
+    
+    ds = xr.open_mfdataset(fname).rename(x='lon', y='lat', z='topography')
+    
+    seafrac = (ds.topography < 0).coarsen(lat=60, lon=60).sum().compute() / 60**2
     seafrac = seafrac.assign_coords(
-        lat=arange(-89.5, 90), lon=arange(-179.5, 180)
-    ).rename("seafrac")
-    seafrac.attrs = dict(
-        description="Fraction of pixel that is covered by ocean. Calculated from ETOPO1. ",
-        unit="frac",
-    )
+        lat=lambda a: np.around(a.lat * 2) / 2,
+        lon=lambda a: np.around(a.lon * 2) / 2)
+    
+    area = get_area_from_dataset(seafrac)
 
-    seafrac.to_netcdf(process_dest)
+    x = seafrac.lon
+    y = seafrac.lat
+    black_sea =   (y>39) & (y<52) & (x>27) & (x<40)
+    caspian_sea = (y>36) & (y<52) & (x>40) & (x<65)
+    lake_baikal = (y>36) & (y<52) & (x>80) & (x<105)
+    great_lakes = (y>42) & (y<50) & (x>-100)& (x<-75)
+    outback =     (y>-33) & (y<-25) & (x>133) & (x<142)
+    mask = ~black_sea & ~caspian_sea & ~great_lakes & ~lake_baikal & ~outback
 
-    return process_dest
+    ocean_area = (seafrac.where(mask).fillna(0) * area).assign_attrs(
+        units='m2', 
+        description=(
+            'Area of 1x1deg pixels for the ocean. The following inland water bodies '
+            'have been exlcuded: black sea, caspian sea, lake baikal, and the great '
+            'lakes. Area does not account for the non-spherical nature of earth. '
+            'Coastal fraction was calculated using ETOPO1 data. '
+        )
+    ).rename('ocean_area')
+    
+    ocean_area.to_netcdf(sname)
+
+    return sname
+

@@ -3,10 +3,8 @@ Water vapour pressure
 ---------------------
 """
 
-from . import check_units as check
 
-
-def weiss1980(salt, temp_K):
+def weiss1980(salt, temp_K, checks=False):
     """Water vapour pressure of seawater after Weiss and Price (1980)
 
     For a given salinity and temperature using the methods
@@ -32,10 +30,16 @@ def weiss1980(salt, temp_K):
         and seawater. Marine Chemistry, 8(4), 347–359.
         https://doi.org/10.1016/0304-4203(80)90024-9
     """
-    from numpy import exp, log
+    from numpy import exp, log, nanmedian
+    
+    if checks:
+        if nanmedian(temp_K) > 270:
+            raise ValueError('Temperature is not in Kelvin')
+        if nanmedian(salt) > 50:
+            raise ValueError('Salinity units are not correct')
 
-    T = check.temp_K(temp_K)
-    S = check.salt(salt)
+    T = temp_K
+    S = salt
 
     # Equation comes straight from Weiss and Price (1980)
     pH2O = exp(+24.4543 - 67.4509 * (100 / T) - 4.8489 * log(T / 100) - 0.000544 * S)
@@ -43,7 +47,7 @@ def weiss1980(salt, temp_K):
     return pH2O
 
 
-def dickson2007(salt, temp_K):
+def dickson2007(salt, temp_K, checks=False):
     """Water vapour pressure of seawater after Dickson et al. (2007)
 
     Calculates :math:`pH_2O` at a given salinity and temperature using the
@@ -67,10 +71,16 @@ def dickson2007(salt, temp_K):
     0.030698866245809465
 
     """
-    from numpy import exp
+    from numpy import exp, nanmedian
+    
+    if checks:
+        if nanmedian(temp_K) > 270:
+            raise ValueError('Temperature is not in Kelvin')
+        if nanmedian(salt) > 50:
+            raise ValueError('Salinity units are not correct')
 
-    T = check.temp_K(temp_K)
-    S = check.salt(salt)
+    T = temp_K
+    S = salt
 
     ###################################################
     # WATER VAPOUR PRESSURE FOR PURE WATER

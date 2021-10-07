@@ -10,6 +10,11 @@ from fetch_data import download
 
 from .utils import preprocess
 
+from pathlib import Path as path
+
+
+base = str(path(__file__).resolve().parent.parent)
+
 
 def main(catalog_fname="../data/spco2_data.yml", dest="../data/output/", verbose=True):
     """
@@ -402,7 +407,7 @@ class SOCOMensemble:
         flist = download(**entry)
         xda = xr.open_mfdataset(flist, preprocess=preprocess(decode_time)).fco2
 
-        aux_cat = read_catalog("../data/aux_data.yml")
+        aux_cat = read_catalog(self.aux_catalog_name)
 
         t0, t1 = [str(s) for s in xda.time.values[[0, -1]]]
         sst = xr.open_dataset(download_sst_ice(aux_cat["oisst_v2"]))["sst"].sel(
@@ -474,9 +479,11 @@ class SOCOMensemble:
     def get_seamask(entry):
         """processes data"""
 
-        flist = download(**entry)
-        xds = xr.open_mfdataset(flist, preprocess=preprocess())
+        from .aux_vars import ocean_area
+        
+        area = xr.open_mfdataset(ocean_area()).ocean_area
+        frac = area / area.max('lon')
+        
+        mask = frac > 0.05
 
-        xda = xds.seamask.assign_attrs(**entry["meta"])
-
-        return xda
+        return mask
