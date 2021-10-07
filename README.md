@@ -2,7 +2,6 @@ pySeaFlux
 ==============================
 [![Build Status](https://github.com/lukegre/pyseaflux/workflows/Tests/badge.svg)](https://github.com/lukegre/pyseaflux/actions)
 [![Documentation Status](https://readthedocs.org/projects/seaflux/badge/?version=latest)](https://seaflux.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/lukegre/pyseaflux/branch/master/graph/badge.svg)](https://codecov.io/gh/lukegre/pyseaflux)
 [![pypi](https://badgen.net/pypi/v/pyseaflux)](https://pypi.org/project/pyseaflux)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4659162.svg)](https://doi.org/10.5281/zenodo.4045403)
 [![License:MIT](https://img.shields.io/badge/License-MIT-lightgray.svg?style=flt-square)](https://opensource.org/licenses/MIT)
