@@ -3,6 +3,7 @@ CO2 solubility in seawater
 --------------------------
 """
 
+
 def solubility_weiss1974(salt, temp_K, press_atm=1, checks=True):
     """Calculates the solubility of CO2 in sea water
 
@@ -27,11 +28,13 @@ def solubility_weiss1974(salt, temp_K, press_atm=1, checks=True):
     """
 
     from numpy import exp, log, nanmedian
+    from xarray import DataArray
+
     from . import vapour_pressure as vapress
-    
+
     if checks:
         if nanmedian(temp_K) < 270:
-            raise ValueError('Temperature is not in Kelvin')
+            raise ValueError("Temperature is not in Kelvin")
 
     T = temp_K
     S = salt
@@ -56,5 +59,14 @@ def solubility_weiss1974(salt, temp_K, press_atm=1, checks=True):
     # mol / L / atm --> mol / m3 / uatm
     # mol . L-1 . atm-1 * (L . m-3) * (atm . uatm-1)
     #                       1000    *   1e-6
+
+    if isinstance(K0, DataArray):
+        K0 = K0.assign_attrs(
+            units="mol/L/atm",
+            description=(
+                "solubility based on Weiss (1974), with a correction for "
+                "vapour pressure (Weiss, 1980)"
+            ),
+        )
 
     return K0  # units mol/L/atm

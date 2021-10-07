@@ -6,6 +6,60 @@ Modulates the magnitude of the flux between the atmosphere and the ocean.
 """
 
 
+def _add_xarray_attrs(func):
+    import re
+
+    from functools import wraps
+
+    from xarray import DataArray
+
+    def get_refs(func):
+        found = re.findall("References:(.*)", func.__doc__, flags=re.DOTALL)
+        if any(found):
+            ref = " ".join([s.strip() for s in found[0].split("\n")]).strip()
+            return ref
+        else:
+            return ""
+
+    def get_code(func):
+        import inspect
+
+        raw = "".join(inspect.getsource(func))
+        found = re.findall("(k = .*)", raw)
+
+        if any(found):
+            code = found[0]
+            return code
+        else:
+            return ""
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        out = func(*args, **kwargs)
+        if isinstance(out, DataArray):
+            names = {
+                "k_Li86": "Liss and Merlivat (1986)",
+                "k_Wa92": "Wanninkhof (1992)",
+                "k_Wa99": "Wanninkhof and McGillis(1999)",
+                "k_Ni00": "Nightingale et al. (2000)",
+                "k_Mc01": "McGillis et al (2001)",
+                "k_Ho06": "Ho et al. (2006)",
+                "k_Sw07": "Sweeney et al. (2007)",
+                "k_Wa09": "Wanninkhof et al. (2009)",
+                "k_Wa14": "Wanninkhof et al. (2014)",
+            }
+            name = names[func.__name__]
+            out = out.assign_attrs(
+                units="cm/hr",
+                description=f"gas transfer velocity of CO2 in seawater using {name}",
+                reference=get_refs(func),
+                formulation=get_code(func),
+            )
+        return out
+
+    return wrapper
+
+
 def schmidt_number(temp_C):
     """
     Calculates the Schmidt number as defined by Jahne et al. (1987) and listed
@@ -28,10 +82,10 @@ def schmidt_number(temp_C):
         https://doi.org/10.1029/JC092iC10p10767
     """
     from numpy import nanmedian
-    
+
     if nanmedian(temp_C) > 270:
-        raise ValueError('temperature is not in degC')
-    
+        raise ValueError("temperature is not in degC")
+
     T = temp_C
 
     a = +2116.8
@@ -87,6 +141,7 @@ def k_Li86(wind_ms, temp_C):
     return k
 
 
+@_add_xarray_attrs
 def k_Wa92(wind_second_moment, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
@@ -123,7 +178,6 @@ def k_Wa92(wind_second_moment, temp_C):
     """
 
     U2 = wind_second_moment
-    T = temp_C
 
     Sc = schmidt_number(temp_C)
     k = (0.31 * U2) * (660 / Sc) ** 0.5
@@ -131,6 +185,7 @@ def k_Wa92(wind_second_moment, temp_C):
     return k
 
 
+@_add_xarray_attrs
 def k_Wa99(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
@@ -155,10 +210,8 @@ def k_Wa99(wind_ms, temp_C):
         between air-sea CO2 exchange and wind speed. Geophysical Research
         Letters, 26(13), 1889–1892. https://doi.org/10.1029/1999GL900363
     """
-    from numpy import array
 
     U = wind_ms
-    T = temp_C
 
     Sc = schmidt_number(temp_C)
     k = (0.0283 * U ** 3) * (600 / Sc) ** 0.5
@@ -166,6 +219,7 @@ def k_Wa99(wind_ms, temp_C):
     return k
 
 
+@_add_xarray_attrs
 def k_Ni00(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
@@ -190,7 +244,6 @@ def k_Ni00(wind_ms, temp_C):
     """
 
     U = wind_ms
-    T = temp_C
 
     Sc = schmidt_number(temp_C)
     k = (0.333 * U + 0.222 * U ** 2) * (600 / Sc) ** 0.5
@@ -198,6 +251,7 @@ def k_Ni00(wind_ms, temp_C):
     return k
 
 
+@_add_xarray_attrs
 def k_Mc01(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
@@ -225,7 +279,6 @@ def k_Mc01(wind_ms, temp_C):
     """
 
     U = wind_ms
-    T = temp_C
 
     Sc = schmidt_number(temp_C)
     k = 3.3 + (0.026 * U ** 3) * (660 / Sc) ** 0.5
@@ -233,6 +286,7 @@ def k_Mc01(wind_ms, temp_C):
     return k
 
 
+@_add_xarray_attrs
 def k_Ho06(wind_second_moment, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
@@ -263,7 +317,6 @@ def k_Ho06(wind_second_moment, temp_C):
     """
 
     U2 = wind_second_moment
-    T = temp_C
 
     Sc = schmidt_number(temp_C)
     k = (0.266 * U2) * (600 / Sc) ** 0.5
@@ -271,6 +324,7 @@ def k_Ho06(wind_second_moment, temp_C):
     return k
 
 
+@_add_xarray_attrs
 def k_Sw07(wind_second_moment, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
@@ -300,7 +354,6 @@ def k_Sw07(wind_second_moment, temp_C):
     """
 
     U2 = wind_second_moment
-    T = temp_C
 
     Sc = schmidt_number(temp_C)
     k = (0.27 * U2) * (660 / Sc) ** 0.5
@@ -308,6 +361,7 @@ def k_Sw07(wind_second_moment, temp_C):
     return k
 
 
+@_add_xarray_attrs
 def k_Wa09(wind_ms, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
@@ -335,7 +389,6 @@ def k_Wa09(wind_ms, temp_C):
     """
 
     U = wind_ms
-    T = temp_C
 
     Sc = schmidt_number(temp_C)
     k = (3.0 + 0.1 * U + 0.064 * U ** 2 + 0.011 * U ** 3) * (660 / Sc) ** 0.5
@@ -343,6 +396,7 @@ def k_Wa09(wind_ms, temp_C):
     return k
 
 
+@_add_xarray_attrs
 def k_Wa14(wind_second_moment, temp_C):
     """
     Calculates the gas transfer coeffcient for CO2 using the formulation
@@ -371,7 +425,6 @@ def k_Wa14(wind_second_moment, temp_C):
     """
 
     U2 = wind_second_moment
-    T = temp_C
 
     Sc = schmidt_number(temp_C)
     k = 0.251 * U2 * (660 / Sc) ** 0.5
