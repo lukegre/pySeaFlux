@@ -3,6 +3,7 @@ Set up module access for the base package
 """
 from . import auxiliary_equations as eqs
 from . import gas_transfer_velocity as kw
+from . import vapour_pressure
 from .area import get_area_from_dataset
 from .data.download_zenodo_files import get_seaflux_data, get_zenodo_catalog
 from .data.utils import preprocess as preprocess
