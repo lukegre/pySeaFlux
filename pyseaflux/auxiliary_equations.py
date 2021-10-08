@@ -8,8 +8,6 @@ useful.
 
 import numpy as np
 
-from . import check_units as check
-
 
 def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0, checks=True):
     """Returns exact sea level pressure if the sensor is measuring at height
@@ -25,12 +23,12 @@ def pressure_height_correction(pres_hPa, tempSW_C, sensor_height=10.0, checks=Tr
         array: height corrected pressure
     """
     from numpy import nanmedian
-    
+
     if checks:
         if nanmedian(tempSW_C) > 270:
-            raise ValueError('Temperature is not in Celcius')
+            raise ValueError("Temperature is not in Celsius")
         if nanmedian(pres_hPa) < 10:
-            raise ValueError('Pressure is not in hPa')
+            raise ValueError("Pressure is not in hPa")
 
     T = tempSW_C + 273.15  # temperature in Kelvin
     P = pres_hPa * 100  # pressure in Pascal
