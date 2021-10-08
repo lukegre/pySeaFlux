@@ -8,7 +8,8 @@ pySeaFlux
 <!-- [![conda-forge](https://img.shields.io/conda/dn/conda-forge/seaflux?label=conda-forge)](https://anaconda.org/conda-forge/seaflux) -->
 
 
-Calculation of air-sea fluxes
+A companion package to the SeaFlux air sea CO2 flux ensemble for observation-based data products that estimate pCO2. 
+pySeaFlux can calculate fluxes and download data required to calculate fluxes. 
 
 
 Installing
@@ -27,17 +28,8 @@ Overview of functionality
 - Calculate sea-air fluxes using the bulk formulation
 - Convert pCO2 to fCO2 and *vice versa*.
 - Correct or adjust pCO2 for temperature changes
-- Scale kw to 14C bomb values for wind products using Wanninkhof's (1992) second moment of the wind speed (requires standard deviation of the wind)
 - Download NOAA Marine Boundary Layer xCO2 and related functions for pCO2 conversion
-- Calculate the grid cell area (in m^2) for a grid of latitudes and longitudes - also works as an xarray method (`xda.area()`)
-
-
-To Do
------
-- unit errors should only happen when more than 50% of non-nan values are not valid. Otherwise, raise warning and make output `nan`. Will double up with `pyCO2SYS`.
-- tests! Currently there are not any meaningful tests.
-- Add contributor file.
-- Documentation
+- Calculate the grid cell area (in m^2) for a grid of latitudes and longitudes
 
 
 --------
