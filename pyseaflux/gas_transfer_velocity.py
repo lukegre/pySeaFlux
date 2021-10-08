@@ -7,6 +7,7 @@ Modulates the magnitude of the flux between the atmosphere and the ocean.
 
 
 def _add_xarray_attrs(func):
+    """A helper function to add attributes to xarray."""
     import re
 
     from functools import wraps
@@ -14,6 +15,8 @@ def _add_xarray_attrs(func):
     from xarray import DataArray
 
     def get_refs(func):
+        """gets the reference from the docs where the reference is formatted
+        as \nReferences: ..."""
         found = re.findall("References:(.*)", func.__doc__, flags=re.DOTALL)
         if any(found):
             ref = " ".join([s.strip() for s in found[0].split("\n")]).strip()
@@ -22,6 +25,8 @@ def _add_xarray_attrs(func):
             return ""
 
     def get_code(func):
+        """get the formulation of kw from the function code. Requires the line
+        to start with k = ..."""
         import inspect
 
         raw = "".join(inspect.getsource(func))
@@ -35,8 +40,10 @@ def _add_xarray_attrs(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
+        """wrapper that adds the xarray metadata if input is xarray"""
         out = func(*args, **kwargs)
         if isinstance(out, DataArray):
+            # full reference based on function name. This is manually added
             names = {
                 "k_Li86": "Liss and Merlivat (1986)",
                 "k_Wa92": "Wanninkhof (1992)",

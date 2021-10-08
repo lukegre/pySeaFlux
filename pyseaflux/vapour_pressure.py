@@ -31,12 +31,13 @@ def weiss1980(salt, temp_K, checks=False):
         https://doi.org/10.1016/0304-4203(80)90024-9
     """
     from numpy import exp, log, nanmedian
-    
+    from xarray import DataArray
+
     if checks:
         if nanmedian(temp_K) > 270:
-            raise ValueError('Temperature is not in Kelvin')
+            raise ValueError("Temperature is not in Kelvin")
         if nanmedian(salt) > 50:
-            raise ValueError('Salinity units are not correct')
+            raise ValueError("Salinity units are not correct")
 
     T = temp_K
     S = salt
@@ -44,6 +45,10 @@ def weiss1980(salt, temp_K, checks=False):
     # Equation comes straight from Weiss and Price (1980)
     pH2O = exp(+24.4543 - 67.4509 * (100 / T) - 4.8489 * log(T / 100) - 0.000544 * S)
 
+    if isinstance(pH2O, DataArray):
+        pH2O = pH2O.assign_attrs(
+            units="atm", description="Water vapour pressure based on Weiss (1980)"
+        )
     return pH2O
 
 
@@ -72,12 +77,13 @@ def dickson2007(salt, temp_K, checks=False):
 
     """
     from numpy import exp, nanmedian
-    
+    from xarray import DataArray
+
     if checks:
         if nanmedian(temp_K) > 270:
-            raise ValueError('Temperature is not in Kelvin')
+            raise ValueError("Temperature is not in Kelvin")
         if nanmedian(salt) > 50:
-            raise ValueError('Salinity units are not correct')
+            raise ValueError("Salinity units are not correct")
 
     T = temp_K
     S = salt
@@ -127,4 +133,9 @@ def dickson2007(salt, temp_K, checks=False):
 
     seawater = pure_water * exp(-0.018 * osmotic_coeff * total_molality)
 
+    if isinstance(seawater, DataArray):
+        seawater = seawater.assign_attrs(
+            units="atm",
+            description="Water vapour pressure based on Dickson et al. (2007)",
+        )
     return seawater
