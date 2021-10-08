@@ -3,14 +3,17 @@ seaflux_data:
   # name is optional to make the README.txt file pretty with a header
   name: "SeaFlux data for air-sea CO2 flux calculations"
   # all files will be downloaded to this directory. Will be created if it doesn't exist
-  dest: ~/Downloads/SeaFlux_v2021.01
+  dest: ~/Downloads/SeaFlux_v2021.04
   # all urls will be downloaded
   url:
-    - https://zenodo.org/record/4664653/files/SeaFluxV2021.01_solWeis74.nc
-    - https://zenodo.org/record/4664653/files/SeaFluxV2021.01_icefrac_1988-2018.nc
-    - https://zenodo.org/record/4664653/files/SeaFluxV2021.01_kwScaled16.5cmhr_1988-2018.nc
-    - https://zenodo.org/record/4664653/files/SeaFluxV2021.01_pCO2atm_NOAAmbl%2BERA5mslp_1988-2018.nc
-    - https://zenodo.org/record/4664653/files/SeaFluxV2021.01_spCO2filled_1988-2018.nc
+    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_fgco2_all_winds_products.nc
+    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_spco2_SOCOM_unfilled_1982-2019.nc
+    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_area_ocean.nc
+    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_ice_1982-2020.nc
+    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_solWeis74_1982-2020.nc
+    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_kw_quadratic_scaled_1982-2020.nc
+    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_pco2atm_1982-2020.nc
+    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_spco2_filler_1990-2019.nc
   # all metadata will be written to the README.txt file and the netCDF file's global attributes
   meta:
     contact: luke.gregor@usys.ethz.ch
@@ -27,12 +30,11 @@ seaflux_data:
     # extract from the abstract
     description: >
       The ensemble data product, SeaFlux (Fay et al. (2021),
-      doi.org/10.5281/zenodo.4133802, https://github.com/luke-gregor/SeaFlux),
+      doi.org/10.5281/zenodo.4133802, https://github.com/luke-gregor/pySeaFlux),
       accounts for the diversity of the underlying mapping methodologies.
       Utilizing six global observation-based mapping products, the SeaFlux ensemble
       approach adjusts for methodological inconsistencies in flux calculations
       that can result in an average error of 15 % in global mean flux estimates.
       We address differences in spatial coverage of the surface ocean CO2
-      between the mapping products which ultimately yields an increase in CO2
-      uptake of up to 19 % for some products. Fluxes are calculated using three
+      between the mapping products. Fluxes are calculated using three
       wind products (CCMPv2, ERA5, and JRA55).
