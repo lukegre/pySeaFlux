@@ -11,6 +11,8 @@ pySeaFlux
 A companion package to the SeaFlux air sea CO2 flux ensemble for observation-based data products that estimate pCO2. 
 pySeaFlux can calculate fluxes and download data required to calculate fluxes. 
 
+For the SeaFlux data set, see https://essd.copernicus.org/preprints/essd-2021-16/ (on the verge of publication)
+
 
 Installing
 ----------
