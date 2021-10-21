@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to seaflux's documentation!
+Welcome to pySeaFlux's documentation!
 =======================================
 
 pySeaFlux is a Python 3.6+ package that can be used to calculate air-sea CO2 fluxes for the global ocean.
