@@ -1,21 +1,17 @@
 # File can only have one entry
+
+
 seaflux_data:
   # name is optional to make the README.txt file pretty with a header
   name: "SeaFlux data for air-sea CO2 flux calculations"
   # all files will be downloaded to this directory. Will be created if it doesn't exist
   dest: ~/Downloads/SeaFlux_v2021.04
   # all urls will be downloaded
-  url:
-    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_fgco2_all_winds_products.nc
-    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_spco2_SOCOM_unfilled_1982-2019.nc
-    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_area_ocean.nc
-    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_ice_1982-2020.nc
-    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_solWeis74_1982-2020.nc
-    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_kw_quadratic_scaled_1982-2020.nc
-    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_pco2atm_1982-2020.nc
-    - https://zenodo.org/record/5482547/files/SeaFlux_v2021.04_spco2_filler_1990-2019.nc
+  url: https://zenodo.org/record/4133802
   # all metadata will be written to the README.txt file and the netCDF file's global attributes
   meta:
+    year_range: [1982, 2024]
+    version: v2025.01
     contact: luke.gregor@usys.ethz.ch
     # doi will always take you to the latest release and can be used to cite all data
     doi: https://doi.org/10.5281/zenodo.4133802

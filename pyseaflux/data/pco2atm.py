@@ -150,7 +150,27 @@ def atm_xCO2_to_pCO2(xCO2_ppm, slp_hPa, tempSW_C, salt):
     return pCO2atm
 
 
-def read_noaa_mbl_url(noaa_mbl_url, dest):
+def download_noaa_mbl_url(noaa_mbl_url, dest):
+    import pooch
+
+    # save to temporary location with pooch
+    print(
+        f"[SeaFlux] Downloading {noaa_mbl_url} to {dest} and reading in as pd.DataFrame"
+    )
+    from pathlib import Path
+
+    dest = Path(dest)
+    fname = pooch.retrieve(
+        url=noaa_mbl_url,
+        known_hash=None,
+        path=str(dest.parent),
+        fname=str(dest.name),
+    )
+
+    return fname
+
+
+def read_noaa_mbl_url(noaa_mbl_fname, dest):
     """Downloads url and reads in the MBL surface file
 
     Args:
@@ -162,28 +182,12 @@ def read_noaa_mbl_url(noaa_mbl_url, dest):
     """
     import re
 
-    from pathlib import Path
-
     import numpy as np
     import pandas as pd
-    import pooch
-
-    # save to temporary location with pooch
-    print(
-        f"[SeaFlux] Downloading {noaa_mbl_url} to {dest} and reading in as pd.DataFrame"
-    )
-
-    dest = Path(dest)
-    fname = pooch.retrieve(
-        url=noaa_mbl_url,
-        known_hash=None,
-        path=str(dest.parent),
-        fname=str(dest.name),
-    )
 
     # find start line
     is_mbl_surface = False
-    for start_line, line in enumerate(open(fname)):
+    for start_line, line in enumerate(open(noaa_mbl_fname)):
         if re.findall("MBL.*SURFACE", line):
             is_mbl_surface = True
         if not line.startswith("#"):
@@ -195,7 +199,7 @@ def read_noaa_mbl_url(noaa_mbl_url, dest):
         )
 
     # read fixed width file CO2
-    df = pd.read_fwf(fname, skiprows=start_line, header=None, index_col=0)
+    df = pd.read_fwf(noaa_mbl_fname, skiprows=start_line, header=None, index_col=0)
     df.index.name = "date"
     # every second line is uncertainty
     df = df.iloc[:, ::2]
@@ -215,14 +219,11 @@ def read_noaa_mbl_url(noaa_mbl_url, dest):
     index = df.index.set_names(["time", "lat"])
     df = df.set_axis(index)
 
-    df.source = noaa_mbl_url
-
     return df
 
 
-def download_noaa_mbl(
-    noaa_mbl_url,
-    download_dest="../data/raw/co2_GHGreference_surface.txt",
+def broadcast_noaa_mbl(
+    df,
     target_lat=None,
     target_lon=None,
     interp_method="linear",
@@ -245,28 +246,20 @@ def download_noaa_mbl(
     import numpy as np
     import xarray as xr
 
-    from pandas import Timestamp
+    da = df.to_xarray()
 
-    history = (
-        f"[SeaFlux@{Timestamp.today():%Y-%m-%dT%H:%M}]: "
-        f"downloaded NOAA MBL data from {noaa_mbl_url}, "
-    )
-
-    df = read_noaa_mbl_url(noaa_mbl_url, download_dest)
-
-    print("[SeaFlux] Converting pd.DataFrame to xr.DataArray")
-    xda = df.to_xarray()
+    history = ""
 
     if target_lat is not None:
         history += f"latitude interpolated with {interp_method}, "
-        xda = xda.interp(lat=target_lat, method=interp_method)
+        da = da.interp(lat=target_lat, method=interp_method)
 
     if target_lon is not None:
         history += "longitude broadcast"
         lon = xr.DataArray(np.ones_like(target_lon), dims=["lon"], coords=[target_lon])
-        xda = xda * lon
+        da = da * lon
 
-    xda.attrs = dict(
+    da.attrs = dict(
         units="ppm",
         product="NOAA Greenhouse Gas Marine Boundary Layer Reference",
         history=history,
@@ -278,7 +271,7 @@ def download_noaa_mbl(
         ),
     )
 
-    return xda
+    return da
 
 
 def interpolate_year(co2_dataarray):

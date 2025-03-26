@@ -7,4 +7,8 @@ Hence, this module is not imported by default and submodules
 should be imported on demand.
 """
 
-from .download_zenodo_files import get_seaflux_data, get_zenodo_catalog
+from . import utils
+from . import pco2atm
+from . import aux_vars
+from . import processors
+from . import download
