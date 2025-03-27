@@ -7,7 +7,7 @@ Hence, this module is not imported by default and submodules
 should be imported on demand.
 """
 
-from . import utils
+from . import config
 from . import pco2atm
 from . import processors
 from . import download

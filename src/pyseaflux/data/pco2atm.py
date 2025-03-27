@@ -34,7 +34,7 @@ def main(
     from pandas import Timestamp
 
     from .aux_vars import download_era5_slp, download_salinity, download_sst_ice
-    from .utils import center_time_on_15th, preprocess, save_seaflux
+    from .config import center_time_on_15th, preprocess, save_seaflux
 
     if path(output_dest).is_file():
         return output_dest
