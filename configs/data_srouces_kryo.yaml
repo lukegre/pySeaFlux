@@ -1,57 +1,64 @@
+release:
+    version: v2025.01
+    time: 
+        start: 1982-01-01
+        end: 2024-12-01
 
-
-sst:
+    
+oisst2:
+  name: oisst2
+  urls: 
+    - url: filecache::https://downloads.psl.noaa.gov/Datasets/noaa.oisst.v2.highres/{variable}.mon.mean.nc
+      variable:
+        - sst
+        - icec
   metadata: 
     info: https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.html
     citation: https://ftp.emc.ncep.noaa.gov/cmb/sst/papers/oiv2pap/
-  url: filecache::https://downloads.psl.noaa.gov/Datasets/noaa.oisst.v2/sst.oisst.mon.mean.1982.nc
-  storage_options: 
+  fsspec_options: 
     same_names: true
-    cache_storage: ../data/oisstV2/
+    cache_storage: ../data/raw/oisstV2/
+  output_options:
+    output_storage: ../data/monthly_by_1x1/oisstV2/
   processors:
     - sort_lat
     - lon_180
     - grid_edge_to_center_lon
+    - oisst_coarsen_to_1deg
   variables:
     time: time
     lat: lat
     lon: lon
     sst: sst
-
-seaice: 
-  metadata:
-    info: https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.html
-    citation: https://ftp.emc.ncep.noaa.gov/cmb/sst/papers/oiv2pap/
-  url: filecache::https://downloads.psl.noaa.gov/Datasets/noaa.oisst.v2/icec.mnmean.nc
-  storage_options:
-    same_names: true
-    cache_storage: ../data/oisstV2/
-  processors:
-    - sort_lat
-    - lon_180
-    - grid_edge_to_center_lon
-  variables:
-    time: time
-    lat: lat
-    lon: lon
     icec: seaice
-    
-salinity:
-  url: zip://*.nc::filecache::https://www.metoffice.gov.uk/hadobs/en4/data/en4-2-1/EN.4.2.2/EN.4.2.2.analyses.c10.{t:%Y}.zip
-  storage_options:
-    filecache:
-      same_names: true
-      cache_storage: /net/sea/work/datasets/gridded/ocean/3d/observation/en4/EN.4.2.2/zipped/
+
+
+en422:
+  name: en422
+  urls: 
+    - url: filecache::zip://*.nc::https://www.metoffice.gov.uk/hadobs/en4/data/en4-2-1/EN.4.2.2/EN.4.2.2.analyses.c14.{t:%Y}.zip
+      time: 
+        start: 1982-01-01
+        end: 2021-12-31
+        file_freq: 1YS
+    - url: filecache::zip://*.nc::https://www.metoffice.gov.uk/hadobs/en4/data/en4-2-1/EN.4.2.2.analyses.c14.{t:%Y}.zip
+      time: 
+        start: 2022-01-01
+        end: 2025-02-01
+        file_freq: 1YS
+  fsspec_options:
+    cache_mapper: en422_raw_fname_mapper  # lives in custom_funcs
+    cache_storage: /net/sea/work/datasets/gridded/ocean/3d/observation/en4/EN.4.2.2/
+  output_options:
+    output_storage: ../data/monthly_by_1x1/en422/
+    output_freq: 1YS
   processors:
     - time_month_start
     - surface
     - lon_180
     - grid_edge_to_center_lon
     - grid_edge_to_center_lat
-  time:  # file frequency
-    start: 1982-01-01
-    end: 2024-12-31
-    freq: 1YS
+    - as_float32
   variables:
     time: time
     lat: lat
@@ -59,22 +66,32 @@ salinity:
     salinity: salinity
 
 
-era5_wind:
-  url: filecache::gs://gcp-public-data-arco-era5/raw/date-variable-single_level/{t:%Y}/{t:%m}/{t:%d}/10m_{c}_component_of_wind/surface.nc
-  time:
-    start: 1982-01-01
-    end: 2024-12-31
-    freq: 1D
-  storage_options:
-    filecache:
-      cache_mapper: "lambda s: era5_gcp_raw_fname_mapper(s)"
-      cache_storage: ../data/era5/
+era5:
+  name: era5
+  urls: 
+      - url: filecache::gs://gcp-public-data-arco-era5/raw/date-variable-single_level/{t:%Y}/{t:%m}/{t:%d}/{variable}/surface.nc
+        time:  # special - will iterate through this 
+          start: 1982-01-01
+          end: 2025-01-01
+          file_freq: 1D
+        variable:
+          - surface_pressure
+          - 10m_u_component_of_wind
+          - 10m_v_component_of_wind
+  fsspec_options:
+    cache_mapper: era5_gcp_raw_fname_mapper
+    cache_storage: ../data/raw/era5/
     gs:
       token: anon
+  output_options:
+    output_storage: ../data/monthly_by_1x1/era5/
+    output_freq: 1MS
+    delete_raw_files: true
   variables:
     time: time
     latitude: lat
     longitude: lon
+    sp: mslp
     u10: u10
     v10: v10
   processors:
@@ -83,41 +100,23 @@ era5_wind:
     - compute_wind_moments
     - era5_coarsen_to_1deg
     - resample_to_monthly
+    - as_float32
 
 
-era5_slp:
-  url: filecache::gs://gcp-public-data-arco-era5/raw/date-variable-single_level/{t:%Y}/{t:%m}/{t:%d}/surface_pressure/surface.nc
-  time:
-    start: 1982-01-01
-    end: 2024-12-31
-    freq: 1D
-  storage_options:
-    filecache:
-      cache_mapper: "lambda s: era5_gcp_raw_fname_mapper(s)"
-      cache_storage: ../data/era5/
-    gs:
-      token: anon
-  variables:
-    time: time
-    latitude: lat
-    longitude: lon
-    sp: mslp
-  processors:
-    - sort_lat
-    - lon_180
-    - era5_coarsen_to_1deg
-    - resample_to_monthly
-
-
-ncep1_wind:       
-  url: filecache::https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/surface_gauss/{c}wnd.10m.gauss.{t:%Y}.nc
-  storage_options:
+ncep1_wind:
+  name: ncep1
+  urls: 
+    - url: filecache::https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/surface_gauss/{c}wnd.10m.gauss.{t:%Y}.nc
+      time:
+        start: 1982-01-01
+        end: 2024-12-31
+        file_freq: 1YS
+  fsspec_options:
     same_names: true
-    cache_storage: ../data/ncep1/
-  time:
-    start: 1982-01-01
-    end: 2024-12-31
-    freq: 1YS
+    cache_storage: ../data/raw/ncep1/
+  output_options:
+    output_storage: ../data/monthly_by_1x1/ncep1/
+    output_freq: 1YS
   variables:
     time: time
     lat: lat
@@ -130,11 +129,12 @@ ncep1_wind:
     - compute_wind_moments
     - resample_to_monthly
     - ncep_interp
+    - as_float32
   
 
 atm_co2:
   url: filecache::https://gml.noaa.gov/ccgg/mbl/tmp/co2_GHGreference.1481187609_surface.txt
   storage_options:
     same_names: true
-    cache_storage: ../data/co2mbl/
+    cache_storage: ../data/raw/co2mbl/
   

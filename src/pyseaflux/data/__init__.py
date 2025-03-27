@@ -9,6 +9,5 @@ should be imported on demand.
 
 from . import utils
 from . import pco2atm
-from . import aux_vars
 from . import processors
 from . import download

@@ -3,13 +3,13 @@ import xarray as xr
 from loguru import logger
 
 # required to make custom processors available in the namespace
-from .processesors_custom import *  
+from .custom_funcs import *  
 
 
 def run_processors(ds, processes: list):
     global_namespace = globals()
     for p in processes:
-        logger.info(f"Running processor: {p}")
+        logger.debug(f"Running processor: {p}")
         if isinstance(p, str):
             func = global_namespace[p]
         elif callable(p):
@@ -18,6 +18,10 @@ def run_processors(ds, processes: list):
         ds = add_history_wrapper(func)(ds)
     
     return ds
+
+
+def as_float32(ds):
+    return ds.astype('float32')
 
 
 def subset(ds, **kwargs):

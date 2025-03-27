@@ -135,3 +135,13 @@ def munch_to_dict(munch_obj: Union[munch.Munch, dict]) -> dict:
         return munch_obj.toDict()
     else:
         return munch_obj
+
+
+
+def set_logger_level(level='INFO'):
+    import sys
+    from loguru import logger
+
+    logger.remove()
+    logger.add(sys.stdout, level=level)
+    
