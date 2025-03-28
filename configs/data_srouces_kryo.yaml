@@ -106,11 +106,14 @@ era5:
 ncep1_wind:
   name: ncep1
   urls:
-    - url: filecache::https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/surface_gauss/{c}wnd.10m.gauss.{t:%Y}.nc
+    - url: filecache::https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/surface_gauss/{variable}.{t:%Y}.nc
       time:
         start: 1982-01-01
-        end: 2024-12-31
+        end: 2025-01-01
         file_freq: 1YS
+      variable:
+        - uwnd.10m.gauss
+        - vwnd.10m.gauss
   fsspec_options:
     same_names: true
     cache_storage: ../data/raw/ncep1/
