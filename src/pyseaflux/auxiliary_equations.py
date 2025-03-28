@@ -75,6 +75,6 @@ def temperature_correction(temp_in, temp_out):
     Ti = temp_in
     To = temp_out
 
-    factor = np.exp(0.0433 * (To - Ti) - 4.35e-05 * (To ** 2 - Ti ** 2))
+    factor = np.exp(0.0433 * (To - Ti) - 4.35e-05 * (To**2 - Ti**2))
 
     return factor

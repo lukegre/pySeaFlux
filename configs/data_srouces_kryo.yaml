@@ -1,21 +1,21 @@
 release:
     version: v2025.01
-    time: 
+    time:
         start: 1982-01-01
         end: 2024-12-01
 
-    
+
 oisst2:
   name: oisst2
-  urls: 
+  urls:
     - url: filecache::https://downloads.psl.noaa.gov/Datasets/noaa.oisst.v2.highres/{variable}.mon.mean.nc
       variable:
         - sst
         - icec
-  metadata: 
+  metadata:
     info: https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.html
     citation: https://ftp.emc.ncep.noaa.gov/cmb/sst/papers/oiv2pap/
-  fsspec_options: 
+  fsspec_options:
     same_names: true
     cache_storage: ../data/raw/oisstV2/
   output_options:
@@ -35,14 +35,14 @@ oisst2:
 
 en422:
   name: en422
-  urls: 
+  urls:
     - url: filecache::zip://*.nc::https://www.metoffice.gov.uk/hadobs/en4/data/en4-2-1/EN.4.2.2/EN.4.2.2.analyses.c14.{t:%Y}.zip
-      time: 
+      time:
         start: 1982-01-01
         end: 2021-12-31
         file_freq: 1YS
     - url: filecache::zip://*.nc::https://www.metoffice.gov.uk/hadobs/en4/data/en4-2-1/EN.4.2.2.analyses.c14.{t:%Y}.zip
-      time: 
+      time:
         start: 2022-01-01
         end: 2025-02-01
         file_freq: 1YS
@@ -68,9 +68,9 @@ en422:
 
 era5:
   name: era5
-  urls: 
+  urls:
       - url: filecache::gs://gcp-public-data-arco-era5/raw/date-variable-single_level/{t:%Y}/{t:%m}/{t:%d}/{variable}/surface.nc
-        time:  # special - will iterate through this 
+        time:  # special - will iterate through this
           start: 1982-01-01
           end: 2025-01-01
           file_freq: 1D
@@ -105,7 +105,7 @@ era5:
 
 ncep1_wind:
   name: ncep1
-  urls: 
+  urls:
     - url: filecache::https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/surface_gauss/{c}wnd.10m.gauss.{t:%Y}.nc
       time:
         start: 1982-01-01
@@ -130,11 +130,10 @@ ncep1_wind:
     - resample_to_monthly
     - ncep_interp
     - as_float32
-  
+
 
 atm_co2:
   url: filecache::https://gml.noaa.gov/ccgg/mbl/tmp/co2_GHGreference.1481187609_surface.txt
   storage_options:
     same_names: true
     cache_storage: ../data/raw/co2mbl/
-  

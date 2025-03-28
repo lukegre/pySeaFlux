@@ -104,11 +104,11 @@ def dickson2007(salt, temp_K, checks=False):
     # zeta numbers correspond with alpha numbers
     z = 1 - T / Tc
     z1 = z
-    z2 = z ** 1.5
-    z3 = z ** 3
-    z4 = z ** 3.5
-    z5 = z ** 4
-    z6 = z ** 7.5
+    z2 = z**1.5
+    z3 = z**3
+    z4 = z**3.5
+    z5 = z**4
+    z6 = z**7.5
     # vapour pressure of pure water
     pure_water = Pc * exp(
         (Tc / T) * (a1 * z1 + a2 * z2 + a3 * z3 + a4 * z4 + a5 * z5 + a6 * z6)
@@ -126,9 +126,9 @@ def dickson2007(salt, temp_K, checks=False):
     # total molality of dissolved species
     total_molality = 31.998 * S / (1e3 - 1.005 * S)
     B1 = total_molality * 0.5
-    B2 = B1 ** 2
-    B3 = B1 ** 3
-    B4 = B1 ** 4
+    B2 = B1**2
+    B3 = B1**3
+    B4 = B1**4
     osmotic_coeff = c0 + c1 * B1 + c2 * B2 + c3 * B3 + c4 * B4
 
     seawater = pure_water * exp(-0.018 * osmotic_coeff * total_molality)

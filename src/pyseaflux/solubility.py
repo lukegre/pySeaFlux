@@ -49,9 +49,7 @@ def solubility_weiss1974(salt, temp_K, press_atm=1, checks=True):
     b3 = +0.0050578
 
     T100 = T / 100
-    K0 = exp(
-        a1 + a2 * (100 / T) + a3 * log(T100) + S * (b1 + b2 * T100 + b3 * T100 ** 2)
-    )
+    K0 = exp(a1 + a2 * (100 / T) + a3 * log(T100) + S * (b1 + b2 * T100 + b3 * T100**2))
 
     pH2O = vapress.weiss1980(S, T)
     K0 = K0 / (P - pH2O)

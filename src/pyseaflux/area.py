@@ -21,7 +21,7 @@ def earth_radius(lat):
     a = 6378137
     b = 6356752
     r = (
-        ((a ** 2 * cos(lat)) ** 2 + (b ** 2 * sin(lat)) ** 2)
+        ((a**2 * cos(lat)) ** 2 + (b**2 * sin(lat)) ** 2)
         / ((a * cos(lat)) ** 2 + (b * sin(lat)) ** 2)
     ) ** 0.5
 

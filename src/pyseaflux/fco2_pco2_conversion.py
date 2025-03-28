@@ -78,7 +78,6 @@ def fCO2_to_pCO2(fCO2SW_uatm, tempSW_C, pres_hPa=1013.25, tempEQ_C=None, checks=
 
 
 def pCO2_to_fCO2(pCO2SW_uatm, tempSW_C, pres_hPa=None, tempEQ_C=None, checks=False):
-
     """Convert pCO2 to fCO2 in sea water to account for non-ideal behaviour of CO2
 
     If equilibrator temperature is provided, we get a simple approximate for
@@ -174,21 +173,21 @@ def virial_coeff(temp_K, pres_atm, xCO2_mol=None, checks=False):
 
     Compared with the Seacarb package in R
     """
-    from numpy import array, exp, nanmedian
+    from numpy import exp, nanmedian
 
     if checks:
         if nanmedian(temp_K) < 270:
-            raise ValueError('Temperature is not in Kelvin')
+            raise ValueError("Temperature is not in Kelvin")
         if nanmedian(pres_atm) > 10:
-            raise ValueError('Pressure is not in atmospheres')
-    
-    T = temp_K    
+            raise ValueError("Pressure is not in atmospheres")
+
+    T = temp_K
     P = pres_atm
     C = xCO2_mol
     R = 82.057  # gas constant for ATM
 
     # B is the virial coefficient for pure CO2
-    B = -1636.75 + 12.0408 * T - 0.0327957 * T ** 2 + 3.16528e-5 * T ** 3
+    B = -1636.75 + 12.0408 * T - 0.0327957 * T**2 + 3.16528e-5 * T**3
     # d is the virial coefficient for CO2 in air
     d = 57.7 - 0.118 * T
 

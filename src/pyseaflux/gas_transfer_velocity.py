@@ -101,7 +101,7 @@ def schmidt_number(temp_C):
     d = -0.092307
     e = +0.0007555
 
-    Sc = a + b * T + c * T ** 2 + d * T ** 3 + e * T ** 4
+    Sc = a + b * T + c * T**2 + d * T**3 + e * T**4
 
     return Sc
 
@@ -221,7 +221,7 @@ def k_Wa99(wind_ms, temp_C):
     U = wind_ms
 
     Sc = schmidt_number(temp_C)
-    k = (0.0283 * U ** 3) * (600 / Sc) ** 0.5
+    k = (0.0283 * U**3) * (600 / Sc) ** 0.5
 
     return k
 
@@ -253,7 +253,7 @@ def k_Ni00(wind_ms, temp_C):
     U = wind_ms
 
     Sc = schmidt_number(temp_C)
-    k = (0.333 * U + 0.222 * U ** 2) * (600 / Sc) ** 0.5
+    k = (0.333 * U + 0.222 * U**2) * (600 / Sc) ** 0.5
 
     return k
 
@@ -288,7 +288,7 @@ def k_Mc01(wind_ms, temp_C):
     U = wind_ms
 
     Sc = schmidt_number(temp_C)
-    k = 3.3 + (0.026 * U ** 3) * (660 / Sc) ** 0.5
+    k = 3.3 + (0.026 * U**3) * (660 / Sc) ** 0.5
 
     return k
 
@@ -398,7 +398,7 @@ def k_Wa09(wind_ms, temp_C):
     U = wind_ms
 
     Sc = schmidt_number(temp_C)
-    k = (3.0 + 0.1 * U + 0.064 * U ** 2 + 0.011 * U ** 3) * (660 / Sc) ** 0.5
+    k = (3.0 + 0.1 * U + 0.064 * U**2 + 0.011 * U**3) * (660 / Sc) ** 0.5
 
     return k
 

@@ -1,10 +1,10 @@
 
 sst:
-  metadata: 
+  metadata:
     info: https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.html
     citation: https://ftp.emc.ncep.noaa.gov/cmb/sst/papers/oiv2pap/
   url: filecache::https://downloads.psl.noaa.gov/Datasets/noaa.oisst.v2/sst.oisst.mon.mean.1982.nc
-  storage_options: 
+  storage_options:
     same_names: true
     cache_storage: ../data/oisstV2/
   processors:
@@ -17,7 +17,7 @@ sst:
     lon: lon
     sst: sst
 
-seaice: 
+seaice:
   metadata:
     info: https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.html
     citation: https://ftp.emc.ncep.noaa.gov/cmb/sst/papers/oiv2pap/
@@ -34,7 +34,7 @@ seaice:
     lat: lat
     lon: lon
     icec: seaice
-    
+
 salinity:
   url: zip://*.nc::filecache::https://www.metoffice.gov.uk/hadobs/en4/data/en4-2-1/EN.4.2.2/EN.4.2.2.analyses.g10.{t:%Y}.zip
   storage_options:
@@ -130,7 +130,7 @@ era5_slp:
     - resample_to_monthly
 
 
-ncep1_wind:       
+ncep1_wind:
   url: filecache::https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/surface_gauss/{c}wnd.10m.gauss.{t:%Y}.nc
   storage_options:
     same_names: true
@@ -152,10 +152,9 @@ ncep1_wind:
     - resample_to_monthly
     - ncep_interp
 
-  
+
 atm_co2:
   url: filecache::https://gml.noaa.gov/ccgg/mbl/tmp/co2_GHGreference.1481187609_surface.txt
   storage_options:
     same_names: true
     cache_storage: ../data/co2mbl/
-  
