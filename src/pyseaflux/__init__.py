@@ -8,3 +8,14 @@ from . import vapour_pressure
 from .area import get_area_from_dataset
 from .fco2_pco2_conversion import fCO2_to_pCO2, pCO2_to_fCO2
 from .flux_calculations import flux_bulk
+
+
+__all__ = [
+    "eqs",
+    "kw",
+    "vapour_pressure",
+    "get_area_from_dataset",
+    "fCO2_to_pCO2",
+    "pCO2_to_fCO2",
+    "flux_bulk",
+]

@@ -2,6 +2,7 @@ import pathlib
 import pandas as pd
 import xarray as xr
 from loguru import logger
+from typing import Union
 
 
 def get_data(data_config_entry: dict):
@@ -12,9 +13,9 @@ def get_data(data_config_entry: dict):
 
     # make groups of urls - based on entry.urls[0].time.output_freq
     output_freq = entry.get("output_options", {}).get("output_freq", None)
-    url_groups = make_urls(entry.urls, output_freq)
+    url_groups = make_urls(entry["urls"], output_freq)
 
-    ds_groups = ()
+    ds_groups = []
     for url_list in url_groups:
         ds_groups += (get_data_from_url_list(url_list, entry),)
 
@@ -27,7 +28,7 @@ def get_data(data_config_entry: dict):
 
 
 def get_data_from_url_list(url_list: tuple[str], entry: dict):
-    from dask.diagnostics import ProgressBar
+    from dask.diagnostics import progress
 
     # path for the processed data
     output_path = entry.get("output_options", {}).get("output_storage")
@@ -47,7 +48,7 @@ def get_data_from_url_list(url_list: tuple[str], entry: dict):
 
     if not spath.exists():
         logger.info(f"Computing and saving to: {spath.name}")
-        with ProgressBar():
+        with progress.ProgressBar():
             ds = ds_processed.compute()
             ds.to_netcdf(spath)
     else:
@@ -81,7 +82,7 @@ def download_netcdfs(urls, storage_options, downloader=None):
 
         flist = fsspec.open_local(url, **storage_options)
 
-        return flist
+        return list(flist)
 
     def _fsspec_open_files(urls, storage_options) -> list:
         import fsspec
@@ -169,7 +170,7 @@ def make_urls(urls_specs: list, output_freq=None) -> tuple:
         return urls
 
     def _process_url_time(
-        time_props: dict, output_freq: str = None
+        time_props: dict, output_freq: Union[str, None] = None
     ) -> list[pd.DatetimeIndex]:
         from copy import deepcopy
 
@@ -196,7 +197,6 @@ def make_urls(urls_specs: list, output_freq=None) -> tuple:
             message = (
                 "Entries in a urls item must follow the following types:\n"
                 "{ url: str,  time: {start, end, freq},  *other: list}.\n"
-                f"You have key `{key}` that is `{type(value)}` that must be a list."
             )
             raise TypeError(message)
 

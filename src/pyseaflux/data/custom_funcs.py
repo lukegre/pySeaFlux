@@ -99,7 +99,6 @@ def oisst_coarsen_to_1deg(ds):
     lat = np.arange(-90 + s / 2, 90, s)
     lon = np.arange(-180 + s / 2, 182, s)
 
-    lat025 = ds.lat.values
     lon025 = ds.lon.values
 
     n_ext = 12
